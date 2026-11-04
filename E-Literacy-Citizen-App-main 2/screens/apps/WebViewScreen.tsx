@@ -12,7 +12,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useTheme } from '../../components/ThemeContext';
-import TranslatedText from '../TranslatedText';
+import TranslatedText from '../../components/TranslatedText';
 
 const WebViewScreen = ({ route, navigation }) => {
   const { uri, title } = route.params || {};
