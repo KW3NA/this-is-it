@@ -828,11 +828,6 @@ const styles = StyleSheet.create({
   quitButton: {
     padding: 5,
   },
-  timerText: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

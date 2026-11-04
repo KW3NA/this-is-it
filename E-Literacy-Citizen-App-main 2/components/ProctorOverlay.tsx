@@ -35,6 +35,28 @@ const ProctorOverlayInner: React.FC<{
 
   const granted = !!camPerm?.granted && !!micPerm?.granted;
 
+  // As soon as the gate opens, actively request camera + mic permissions.
+  // Previously the overlay only waited passively for `canAskAgain` and showed
+  // a static screen — if the OS didn't surface the prompt automatically the
+  // learner got stuck. Now the native permission dialog fires immediately.
+  const autoRequested = useRef(false);
+  useEffect(() => {
+    if (autoRequested.current) return;
+    if (camPerm === null || micPerm === null) return; // still loading
+    if (camPerm.granted && micPerm.granted) return;   // nothing to ask
+    if (!camPerm.canAskAgain || !micPerm.canAskAgain) return; // permanently denied -> settings UI
+    autoRequested.current = true;
+    (async () => {
+      try {
+        if (!camPerm.granted) await requestCamPerm();
+        if (!micPerm.granted) await requestMicPerm();
+      } catch {
+        /* the blocked screen's button remains as manual fallback */
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [camPerm, micPerm]);
+
   // Once the OS permission objects have loaded, decide whether to show the
   // grant screen or go straight through to the live camera session.
   useEffect(() => {
