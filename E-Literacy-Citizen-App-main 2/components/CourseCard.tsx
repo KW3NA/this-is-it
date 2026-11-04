@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
+import TranslatedText from './TranslatedText';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
@@ -94,7 +95,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
               end={{ x: 1, y: 1 }}
               style={[StyleSheet.absoluteFill, { borderRadius: 6 }]}
             />
-            <Text style={styles.resumeButtonText}>Resume</Text>
+            <TranslatedText style={styles.resumeButtonText}>Resume</TranslatedText>
           </TouchableOpacity>
         </View>
       </View>

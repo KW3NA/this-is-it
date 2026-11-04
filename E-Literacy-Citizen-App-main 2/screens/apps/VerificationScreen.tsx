@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { useNavigation } from '@react-navigation/native';
 import {RootStackParamList} from '../../navigation/types';  
 
@@ -19,6 +20,7 @@ interface VerificationScreenProps {
 }
 
 export default function VerificationScreen({ navigation }: VerificationScreenProps) {
+  const { t } = useTranslation();
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -69,11 +71,11 @@ export default function VerificationScreen({ navigation }: VerificationScreenPro
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: 20 }}>
       <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 20 }}>
-        Verify Your Email
+        {t("loginScreen.verifyEmailHeader")}
       </Text>
 
       <TextInput
-        placeholder="Enter OTP"
+        placeholder={t("loginScreen.enterOtpPlaceholder")}
         value={otp}
         onChangeText={setOtp}
         keyboardType="numeric"
@@ -91,7 +93,7 @@ export default function VerificationScreen({ navigation }: VerificationScreenPro
         style={{ backgroundColor: "blue", padding: 15, borderRadius: 8 }}
       >
         <Text style={{ color: "#fff", textAlign: "center", fontWeight: "bold" }}>
-          Verify OTP
+          {t("loginScreen.verifyOtpButton")}
         </Text>
       </TouchableOpacity>
 
@@ -100,7 +102,7 @@ export default function VerificationScreen({ navigation }: VerificationScreenPro
         style={{ marginTop: 15, padding: 12, borderRadius: 8, borderWidth: 1 }}
       >
         <Text style={{ textAlign: "center" }}>
-          {loading ? "Sending..." : "Resend OTP"}
+          {loading ? t("loginScreen.sendingText") : t("loginScreen.resendOtp")}
         </Text>
       </TouchableOpacity>
     </View>

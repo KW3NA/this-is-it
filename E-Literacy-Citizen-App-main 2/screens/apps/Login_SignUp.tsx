@@ -9,6 +9,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { LinearGradient } from 'expo-linear-gradient';
 import TranslatedText from '../../components/TranslatedText';
+import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiPost, updateProfile, sendPhoneRegistrationOtp, sendPhoneLoginOtp } from '../../config/api';
 import { supabase } from '../../config/supabase';
@@ -18,6 +19,7 @@ import { supabase } from '../../config/supabase';
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const Login_SignUp = ({ navigation, route }: Props) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -405,7 +407,7 @@ const Login_SignUp = ({ navigation, route }: Props) => {
             {activeTab === 'Signup' && (
               <TextInput
                 style={styles.input}
-                placeholder="Full Name"
+                placeholder={t('loginScreen.fullNamePlaceholder')}
                 value={name}
                 onChangeText={setName}
                 autoCapitalize="words"
@@ -416,7 +418,7 @@ const Login_SignUp = ({ navigation, route }: Props) => {
         ) : (
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder={t('loginScreen.emailPlaceholder')}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -430,7 +432,7 @@ const Login_SignUp = ({ navigation, route }: Props) => {
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.input}
-              placeholder="Password"
+              placeholder={t('loginScreen.passwordPlaceholder')}
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!isPasswordVisible}
@@ -446,7 +448,7 @@ const Login_SignUp = ({ navigation, route }: Props) => {
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.input}
-              placeholder="Confirm Password"
+              placeholder={t('loginScreen.confirmPasswordPlaceholder')}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry={!isPasswordVisible}
