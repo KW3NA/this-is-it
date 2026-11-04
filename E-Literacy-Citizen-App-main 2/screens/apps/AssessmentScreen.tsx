@@ -163,11 +163,11 @@ const mockQuestions = {
     { id: 28, type: 'multiple_choice', question: 'Which audio source gives the clearest voice?', options: ['Phone mic far away', 'Mic/close recording near mouth', 'Speakerphone outdoors', 'Muted video'], correctAnswer: 1 },
     { id: 29, type: 'true_false', question: 'Hashtags never help discovery on social platforms.', correctAnswer: false },
     { id: 30, type: 'multiple_choice', question: 'Before publishing, you should always…', options: ['Skip proofreading', 'Review spelling, links and privacy', 'Post from another person phone', 'Delete the project'], correctAnswer: 1 },
+  ],
   5: [ // Digital Banking & Finance
     { id: 1, type: 'true_false', question: 'Your bank will frequently call you asking for your confidential ATM PIN.', correctAnswer: false },
     { id: 2, type: 'multiple_choice', question: 'What is an OTP in digital banking?', options: ['One-Time Password / PIN', 'Online Tax Payment', 'Official Transfer Paper', 'Optional Tech Protection'], correctAnswer: 0 },
     { id: 3, type: 'fill_blank', question: 'A digital _____ lets you pay for goods using your smartphone without touching a physical card.', correctAnswer: 'wallet' },
-  ],
     { id: 4, type: 'true_false', question: 'Sharing your full card number and OTP with a caller is safe if they claim to be your bank.', correctAnswer: false },
     { id: 5, type: 'multiple_choice', question: 'The safest way to check your balance is…', options: ['Official banking app', 'Random SMS link', 'Cafe Wi-Fi portal', 'Stranger WhatsApp'], correctAnswer: 0 },
     { id: 6, type: 'fill_blank', question: 'A monthly plan tracking income and spending is called a _____.', correctAnswer: 'budget' },
@@ -200,11 +200,11 @@ const mockQuestions = {
     { id: 33, type: 'true_false', question: 'Investing always guarantees that you will make money.', correctAnswer: false },
     { id: 34, type: 'fill_blank', question: 'The price of one currency expressed in another is the exchange _____.', correctAnswer: 'rate' },
     { id: 35, type: 'multiple_choice', question: 'If you suspect card fraud, the FIRST step is…', options: ['Block the card and contact your bank', 'Post about it online', 'Wait and see', 'Order a new card from a random website'], correctAnswer: 0 },
+  ],
   6: [ // E-Government Services
     { id: 1, type: 'multiple_choice', question: 'Which official portal in South Africa is zero-rated on mobile networks for young job seekers?', options: ['SA Youth (sayouth.mobi)', 'Facebook', 'Twitter', 'Amazon'], correctAnswer: 0 },
     { id: 2, type: 'true_false', question: 'South African citizens can renew vehicle licenses and apply for smart IDs through official government online portals.', correctAnswer: true },
     { id: 3, type: 'fill_blank', question: 'The South African Revenue Service online portal is called SARS _____.', correctAnswer: 'eFiling' },
-  ],
     { id: 4, type: 'multiple_choice', question: 'eFiling is used to submit taxes to which department?', options: ['Home Affairs', 'SARS', 'Health', 'Transport'], correctAnswer: 1 },
     { id: 5, type: 'true_false', question: 'Zero-rated educational sites like sayouth.mobi do not consume your mobile data.', correctAnswer: true },
     { id: 6, type: 'fill_blank', question: 'The national electronic identity card is called the smart _____.', correctAnswer: 'ID' },
@@ -227,6 +227,7 @@ const mockQuestions = {
     { id: 23, type: 'multiple_choice', question: 'Using e-government services reduces…', options: ['Need for electricity', 'Travel time and queues', 'Number of citizens', 'Internet availability'], correctAnswer: 1 },
     { id: 24, type: 'true_false', question: 'Passwords for government portals should be unique and secret.', correctAnswer: true },
     { id: 25, type: 'multiple_choice', question: 'After completing an online application you should…', options: ['Save/download confirmation', 'Forget it exists', 'Share OTP publicly', 'Reapply ten times'], correctAnswer: 0 },
+  ],
 };
 
 const AssessmentScreen = ({ route, navigation }) => {
