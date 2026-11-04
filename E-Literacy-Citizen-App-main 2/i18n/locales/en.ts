@@ -461,4 +461,9 @@ export default {
     passwordsDontMatch: 'Passwords do not match.',
     noInternet: 'No internet connection.',
   },
+  proctor: {
+    startingSecureAssessment: 'Starting secure assessment…',
+    verifyingCameraMic: 'Verifying camera and microphone',
+    doNotCoverCamera: 'Do not cover your camera',
+  },
 };

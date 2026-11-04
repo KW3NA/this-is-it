@@ -457,4 +457,9 @@ export default {
     noInternet: 'No internet connection.',
   },
 
+  proctor: {
+    startingSecureAssessment: 'Ku ncala kuhlolwa lokuphephile…',
+    verifyingCameraMic: 'Ku tiyisekiswa likhamera nemayikhrofoni',
+    doNotCoverCamera: 'Ungakhiphi likhamera lakho',
+  },
 };

@@ -457,4 +457,9 @@ export default {
     noInternet: 'No internet connection.',
   },
 
+  proctor: {
+    startingSecureAssessment: 'Kuqalisovavanyo olukhuselekileyo…',
+    verifyingCameraMic: 'Kuqinisekiswa ikhamera nomamkhathi',
+    doNotCoverCamera: 'Ungayiqinisi ikhamera yakho',
+  },
 };

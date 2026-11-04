@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Localization from 'expo-localization';
 import { TranslationService } from './translation';
 import { getApiKey, validateApiKey } from '../config/translation';
 import { syncI18nLanguage } from './languageBridge';
@@ -25,6 +26,23 @@ const languageNames: Record<SupportedLanguage, string> = {
 
 const LANGUAGE_STORAGE_KEY = '@e_literacy_language';
 
+// Detect the device language and map it onto a supported language.
+// English is always the default when nothing has been chosen yet.
+const detectDeviceLanguage = (): SupportedLanguage => {
+  try {
+    const locales = Localization.getLocales();
+    for (const locale of locales) {
+      const code = (locale as { languageCode?: string }).languageCode;
+      if (code && code in languageNames) {
+        return code as SupportedLanguage;
+      }
+    }
+  } catch (e) {
+    // fall through to English
+  }
+  return 'en';
+};
+
 interface LanguageContextProps {
   language: SupportedLanguage;
   setLanguage: (lang: SupportedLanguage) => void;
@@ -39,6 +57,20 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(undefine
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<SupportedLanguage>('en');
+
+  // On very first launch (no saved choice), adopt the device language if it is
+  // one of the supported languages; otherwise stay on English (the default).
+  useEffect(() => {
+    AsyncStorage.getItem(LANGUAGE_STORAGE_KEY)
+      .then((saved) => {
+        if (!saved || !(saved in languageNames)) {
+          const detected = detectDeviceLanguage();
+          setLanguageState(detected);
+          AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, detected).catch(() => {});
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Initialize translation service with API key (used for dynamic content translation).
   useEffect(() => {

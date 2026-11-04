@@ -454,4 +454,9 @@ export default {
     passwordsDontMatch: 'Wagwoorde stem nie ooreen nie.',
     noInternet: 'Geen internetverbinding nie.',
   },
+  proctor: {
+    startingSecureAssessment: 'Beveiligde assessament begin…',
+    verifyingCameraMic: 'Kamera en mikrofoon word geverifieer',
+    doNotCoverCamera: 'Moenie jou kamera bedek nie',
+  },
 };

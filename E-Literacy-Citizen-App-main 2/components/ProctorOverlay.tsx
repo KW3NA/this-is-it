@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
+import TranslatedText from './TranslatedText';
 
 /**
  * ProctorOverlay - Mandatory camera + microphone proctoring for assessments/quizzes.

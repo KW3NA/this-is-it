@@ -454,4 +454,9 @@ export default {
     passwordsDontMatch: 'Amaphasiwedi awahambisani.',
     noInternet: 'Ayikho inthanethi.',
   },
+  proctor: {
+    startingSecureAssessment: 'Kuqalwa ukuhlolwa okuphephile…',
+    verifyingCameraMic: 'Kuqinisekiswa ikhamera nimayikhrofoni',
+    doNotCoverCamera: 'Ungayifihli ikhamera yakho',
+  },
 };
