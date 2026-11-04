@@ -459,7 +459,7 @@ export default {
     verifyingCameraMic: 'Kamera en mikrofoon word geverifieer',
     doNotCoverCamera: 'Moenie jou kamera bedek nie',
     cameraMicRequiredTitle: 'Kamera en Mikrofoon Vereis',
-    cameraMicRequiredBody: 'Om bedrog te voorkom, kan hierdie assessament slegs geskryf word terwyl jou kamera aan is en opteken. Geen antwoorde kan ingevoer word sonder 'n aktiewe proctor-sessie nie.',
+    cameraMicRequiredBody: 'Om bedrog te voorkom, kan hierdie assessament slegs geskryf word terwyl jou kamera aan is en opteken. Geen antwoorde kan ingevoer word sonder \'n aktiewe proctor-sessie nie.',
     enableCameraMic: 'Stel Kamera & Mikfoon in om te Begin',
     permissionDeniedSettings: 'Toestemming is permanent geweier — stel asseblief Kamera en Mikrofoon in jou foon se Instellings in, en maak dan die program weer oop.',
     cameraRequiredTitle: 'Kamera vereis',
