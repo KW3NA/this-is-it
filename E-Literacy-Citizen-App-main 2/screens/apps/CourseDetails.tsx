@@ -226,7 +226,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
             level: c.level || 'Beginner',
             tags: [c.level, (c.competency_area || '').replace(/_/g, ' '), 'Certification'].filter(Boolean),
             imageUrl: c.image_url || 'https://i.pinimg.com/736x/c9/af/43/c9af431cdb9322e4ff4a43af70db96ae.jpg',
-            videoUrl: c.video_url || `https://www.youtube.com/watch?v=${getCourseVideo(c.id, 0).id}`,
+            videoUrl: c.video_url || getCourseVideo(c.id, 0).url,
           });
           if (c.modules && c.modules.length > 0) {
             setModules(c.modules.sort((a: any, b: any) => (a.order_num || 0) - (b.order_num || 0)));
