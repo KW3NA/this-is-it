@@ -337,9 +337,9 @@ export const downloadAndShareCertificate = async (
   }
 };
 
-// Usage example in a component:
+// Usage example in a component (e.g. from screens/apps/):
 /*
-import { downloadAndShareCertificate } from './utils/certificateGenerator';
+import { downloadAndShareCertificate } from '../../utils/certificateGenerator';
 
 const handleGenerateCertificate = async () => {
   await downloadAndShareCertificate({
