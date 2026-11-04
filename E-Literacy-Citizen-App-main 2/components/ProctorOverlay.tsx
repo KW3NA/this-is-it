@@ -56,6 +56,14 @@ const ProctorOverlayInner: React.FC<{
     if (!isFocused && state === 'ready') {
       setState('blocked');
     }
+    // Re-arm the camera when returning to a blocked session whose permissions
+    // are actually granted (fixes getting stuck on the REC bar with no camera).
+    if (isFocused && state === 'blocked' && camPerm?.granted && micPerm?.granted) {
+      setCameraKey((k) => k + 1);
+      setState('ready');
+      if (!sessionStartedAt) setSessionStartedAt(Date.now());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, state]);
 
   // Live REC timer tick while proctored session is active.
@@ -112,8 +120,11 @@ const ProctorOverlayInner: React.FC<{
         return;
       }
     }
+    // Stay in 'checking' until the CameraView fires onCameraReady — this
+    // prevents the "green bar but stuck / black screen" bug where the UI
+    // assumed the session was live before the camera actually opened.
     setCameraKey((k) => k + 1);
-    setState('ready');
+    setState('checking');
     setSessionStartedAt(Date.now());
   };
 
@@ -126,13 +137,46 @@ const ProctorOverlayInner: React.FC<{
     setState('blocked');
   };
 
+  // Safety net: if the camera preview never becomes ready (slow devices),
+  // retry mounting it a few times instead of leaving the learner stuck.
+  useEffect(() => {
+    if (state !== 'checking' || !granted) return;
+    let attempts = 0;
+    const iv = setInterval(() => {
+      attempts += 1;
+      if (attempts >= 4) {
+        clearInterval(iv);
+        setState('blocked'); // show the friendly retry/settings screen
+      } else {
+        setCameraKey((k) => k + 1);
+      }
+    }, 2500);
+    return () => clearInterval(iv);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, granted, cameraKey]);
+
   if (state === 'checking') {
-    // Still waiting for the permission objects to load from the OS
+    // Permissions loading, or camera is opening: show status AND mount the
+    // CameraView (once granted) so onCameraReady can flip us to 'ready'.
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        {granted && (
+          <CameraView
+            key={cameraKey}
+            ref={camRef}
+            facing="front"
+            style={{ position: 'absolute', top: 0, left: 0, width: 2, height: 2, opacity: 0.01 }}
+            onCameraReady={handleCameraReady}
+            onError={handleCameraError}
+            mute
+          />
+        )}
         <FontAwesome6 name="shield-halved" size={48} color="#E67012" />
         <TranslatedText style={styles.title}>Starting secure assessment…</TranslatedText>
         <TranslatedText style={styles.subtitle}>Verifying camera and microphone</TranslatedText>
+        {granted && (
+          <TranslatedText style={[styles.subtitle, { marginTop: 12 }]}>Opening your camera…</TranslatedText>
+        )}
       </View>
     );
   }

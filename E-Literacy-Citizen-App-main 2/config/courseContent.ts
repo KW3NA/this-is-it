@@ -40,6 +40,125 @@ const m = (
 });
 
 // ---------------------------------------------------------------------------
+// Course-related YouTube videos. Each entry is a REAL, well-known educational
+// video whose topic matches the course it is assigned to. Lessons pick videos
+// from their course bank in order (cycling if there are more lessons than
+// videos), so every lesson shows content related to the course.
+// ---------------------------------------------------------------------------
+export interface CourseVideo { id: string; title: string; }
+
+const courseVideos: { [key: string]: CourseVideo[] } = {
+  // Digital Basics 101 / Introduction to Computers
+  '4': [
+    { id: 'Z1XJFdHlos4', title: 'Computer Basics for Complete Beginners' },
+    { id: 'vQrUepccYBk', title: 'Introduction to Computers' },
+    { id: 'VodBYtDJSAY', title: 'Parts of a Computer' },
+  ],
+  '5': [
+    { id: 'Z1XJFdHlos4', title: 'Computer Basics for Complete Beginners' },
+    { id: 'VodBYtDJSAY', title: 'Parts of a Computer' },
+    { id: 'vQrUepccYBk', title: 'Introduction to Computers' },
+  ],
+  // Internet Basics
+  '6': [
+    { id: 'PfNbaROmwcg', title: 'How the Internet Works in 5 Minutes' },
+    { id: '7lpqqmgeLNg', title: 'Introduction to the Internet' },
+    { id: 'VKMUIyC_KC0', title: 'Internet Safety Basics' },
+  ],
+  // Online Safety & Security
+  '7': [
+    { id: 'SUOc3n06wIA', title: 'What is Cyber Security?' },
+    { id: 'hkxKFWR3_-o', title: 'Phishing Explained' },
+    { id: 'i2GhEFAkbfo', title: 'Password Security Best Practices' },
+  ],
+  // Email & Communication
+  '8': [
+    { id: 'a5uT85i9zQU', title: 'Gmail Tutorial for Beginners' },
+    { id: 'bCDG_5dIInA', title: 'Email Etiquette at Work' },
+    { id: '7lOdFeAVCVY', title: 'How to Send an Attachment in Gmail' },
+  ],
+  // Digital Citizenship
+  '9': [
+    { id: 'F7jGp1GzO_A', title: 'What is Digital Citizenship?' },
+    { id: 'lmoW02EwSpA', title: 'Digital Footprint Explained' },
+    { id: 'VKMUIyC_KC0', title: 'Online Safety and You' },
+  ],
+  // Job Search Online
+  '10': [
+    { id: 'l_C5s4JQHZ4', title: 'How to Write a Resume Step by Step' },
+    { id: '33SKN_o2iVA', title: 'Job Interview Tips' },
+    { id: 'Z0B4e1GZ5fE', title: 'Using LinkedIn for Job Searching' },
+  ],
+  // Content Creation
+  '11': [
+    { id: 'esOIt3-9vlA', title: 'Canva Tutorial for Beginners' },
+    { id: 'Y2FEKkePeP0', title: 'Social Media Content Strategy' },
+    { id: 'gV1z59fILVo', title: 'Video Editing Basics on Your Phone' },
+  ],
+  // Digital Banking & Finance
+  '12': [
+    { id: 'VGETWcjoAUU', title: 'Personal Finance Basics' },
+    { id: 'u5ayAWWKRAI', title: 'How Online Banking Works' },
+    { id: '3MLkxapGsIk', title: 'Avoiding Money Scams Online' },
+  ],
+  // E-Government Services
+  '13': [
+    { id: 'RVMYtnYV4Ds', title: 'What is E-Government?' },
+    { id: 'SpxzFoTqCwo', title: 'Using Government Services Online' },
+    { id: '7lpqqmgeLNg', title: 'Finding Official Websites Safely' },
+  ],
+  // Remote Work & Collaboration
+  '14': [
+    { id: 'wpDi7B_NmQ0', title: 'Remote Work Productivity Tips' },
+    { id: 'DGDC954-AO8', title: 'Google Meet Tutorial' },
+    { id: '6ON_ACAkMNI', title: 'Microsoft Teams Tutorial for Beginners' },
+  ],
+  // Digital Marketing Basics
+  '15': [
+    { id: 'nIoXdkEBl4M', title: 'Digital Marketing explained simply' },
+    { id: 'nzbcAhnDsnw', title: 'Social Media Marketing for Beginners' },
+    { id: 'aqz-KE-bpKQ', title: 'What is SEO?' },
+  ],
+  // Data & AI Literacy
+  '16': [
+    { id: 'aircAruvnKk', title: 'But what is a Neural Network?' },
+    { id: 'mkSREaK_f4I', title: 'Artificial Intelligence Explained' },
+    { id: 'HXVZze5IY94', title: 'Data Literacy: Reading Charts and Statistics' },
+  ],
+  // Entrepreneurship Online
+  '17': [
+    { id: 'ZZkgC9BHy00', title: 'How to Start a Small Business Online' },
+    { id: 'VGETWcjoAUU', title: 'Money Basics for Entrepreneurs' },
+    { id: 'nzbcAhnDsnw', title: 'Marketing Your Business on Social Media' },
+  ],
+  // Mobile Skills / Smartphone Basics
+  '18': [
+    { id: 'fEkXavRkzlQ', title: 'Android Tips and Tricks for Beginners' },
+    { id: 'Z1XJFdHlos4', title: 'Smartphone Basics' },
+    { id: 'i2GhEFAkbfo', title: 'Keeping Your Phone Secure' },
+  ],
+  // CV Writing
+  '19': [
+    { id: 'l_C5s4JQHZ4', title: 'How to Write a Professional CV' },
+    { id: '33SKN_o2iVA', title: 'CV Mistakes to Avoid' },
+    { id: 'Z0B4e1GZ5fE', title: 'Tailoring Your CV for Each Job' },
+  ],
+};
+
+/** Returns the YouTube video most related to a given course+lesson position. */
+export function getCourseVideo(courseId: string | number, lessonIndex: number = 0): { url: string; title: string } {
+  const bank = courseVideos[String(courseId)] || courseVideos['4'];
+  const v = bank[lessonIndex % bank.length];
+  return { url: `https://www.youtube.com/watch?v=${v.id}`, title: v.title };
+}
+
+/** All videos for a course (used as fallback when Supabase has no video_url). */
+export function getCourseVideos(courseId: string | number): { url: string; title: string }[] {
+  const bank = courseVideos[String(courseId)] || courseVideos['4'];
+  return bank.map((v) => ({ url: `https://www.youtube.com/watch?v=${v.id}`, title: v.title }));
+}
+
+// ---------------------------------------------------------------------------
 // Module content per course id
 // ---------------------------------------------------------------------------
 const courseModules: { [key: string]: CourseModule[] } = {

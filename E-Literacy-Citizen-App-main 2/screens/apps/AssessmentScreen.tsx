@@ -103,6 +103,11 @@ const mockQuestions = {
     { id: 13, type: 'multiple_choice', question: 'A suspicious email from your "bank" with urgent links should be…', options: ['Clicked quickly', 'Reported and deleted', 'Forwarded to all friends', 'Answered with your PIN'], correctAnswer: 1 },
     { id: 14, type: 'fill_blank', question: 'Logging out of shared computers protects your _____.', correctAnswer: 'account' },
     { id: 15, type: 'multiple_choice', question: 'Which app permission request is a red flag?', options: ['Camera for selfies', 'Contacts for a torch app', 'Location for maps', 'Microphone for calls'], correctAnswer: 1 },
+    { id: 16, type: 'true_false', question: 'Updating your apps and operating system patches security holes.', correctAnswer: true },
+    { id: 17, type: 'fill_blank', question: 'Unsolicited bulk emails promoting scams are called _____.', correctAnswer: 'spam' },
+    { id: 18, type: 'multiple_choice', question: 'A password manager helps you…', options: ['Reuse one password everywhere', 'Store unique strong passwords safely', 'Share passwords automatically', 'Forget your PIN publicly'], correctAnswer: 1 },
+    { id: 19, type: 'true_false', question: 'Scammers can spoof caller ID to look like your bank.', correctAnswer: true },
+    { id: 20, type: 'fill_blank', question: 'Privacy settings that limit who sees your posts control your audience _____.', correctAnswer: 'visibility' },
   ],
 
   3: [ // Intro to Email & Messaging
@@ -187,6 +192,16 @@ const mockQuestions = {
     { id: 23, type: 'multiple_choice', question: 'Best habit before clicking a payment link is…', options: ['Verify sender and URL', 'Enter PIN quickly', 'Screenshot your card', 'Turn off internet'], correctAnswer: 0 },
     { id: 24, type: 'true_false', question: 'Emergency funds should ideally cover about three months of expenses.', correctAnswer: true },
     { id: 25, type: 'multiple_choice', question: 'Which document proves a bank transaction occurred?', options: ['Bank statement/receipt', 'Selfie', 'Music playlist', 'Calendar note'], correctAnswer: 0 },
+    { id: 26, type: 'multiple_choice', question: 'An emergency fund is mainly used for…', options: ['Impulse purchases', 'Unexpected expenses like repairs or job loss', 'Buying crypto on a tip', 'Paying for adverts'], correctAnswer: 1 },
+    { id: 27, type: 'true_false', question: 'Checking your credit report occasionally is a healthy financial habit.', correctAnswer: true },
+    { id: 28, type: 'fill_blank', question: 'Money you owe to others is called a _____.', correctAnswer: 'debt' },
+    { id: 29, type: 'multiple_choice', question: 'Which is usually the cheapest way to move money between your own accounts?', options: ['Same-bank transfer', 'Cash courier', 'International wire', 'Payday loan'], correctAnswer: 0 },
+    { id: 30, type: 'true_false', question: "An SMS saying 'Your account is blocked, click here' should be clicked quickly.", correctAnswer: false },
+    { id: 31, type: 'fill_blank', question: 'Card number, expiry date and CVV together are your card _____.', correctAnswer: 'details' },
+    { id: 32, type: 'multiple_choice', question: 'Regular monthly savings are easiest to keep up by…', options: ['Setting up an automatic transfer', 'Hoping you remember', 'Asking friends to save for you', 'Keeping cash under the mattress'], correctAnswer: 0 },
+    { id: 33, type: 'true_false', question: 'Investing always guarantees that you will make money.', correctAnswer: false },
+    { id: 34, type: 'fill_blank', question: 'The price of one currency expressed in another is the exchange _____.', correctAnswer: 'rate' },
+    { id: 35, type: 'multiple_choice', question: 'If you suspect card fraud, the FIRST step is…', options: ['Block the card and contact your bank', 'Post about it online', 'Wait and see', 'Order a new card from a random website'], correctAnswer: 0 },
   6: [ // E-Government Services
     { id: 1, type: 'multiple_choice', question: 'Which official portal in South Africa is zero-rated on mobile networks for young job seekers?', options: ['SA Youth (sayouth.mobi)', 'Facebook', 'Twitter', 'Amazon'], correctAnswer: 0 },
     { id: 2, type: 'true_false', question: 'South African citizens can renew vehicle licenses and apply for smart IDs through official government online portals.', correctAnswer: true },
@@ -221,15 +236,37 @@ const AssessmentScreen = ({ route, navigation }) => {
   const { colors } = useTheme();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [timeRemaining, setTimeRemaining] = useState(30 * 60); // 30 minutes in seconds
-  const [questions] = useState(mockQuestions[assessment.id] || mockQuestions[1]);
+  // Per-assessment duration comes from TakeAssessmentsMenu (e.g. '40 min');
+  // fall back to 30 minutes. Question count is taken from the actual bank.
+  const durationMinutes = (() => {
+    const match = String(assessment?.duration || '').match(/(\d+)/);
+    return match ? Math.max(5, parseInt(match[1], 10)) : 30;
+  })();
+  const [timeRemaining, setTimeRemaining] = useState(durationMinutes * 60);
+  const [questions] = useState(() => {
+    const bank = mockQuestions[assessment.id] || mockQuestions[1];
+    // Fisher–Yates shuffle so retakes are not identical (still lengthiest bank intact)
+    const arr = [...bank];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  });
   const [showQuitModal, setShowQuitModal] = useState(false);
 
+  // Live refs so the interval never calls a stale closure and cannot double-submit.
+  const submittedRef = React.useRef(false);
+  const submitFnRef = React.useRef<(auto?: boolean) => void>(() => {});
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          handleSubmitAssessment();
+          clearInterval(timer);
+          if (!submittedRef.current) {
+            submittedRef.current = true;
+            submitFnRef.current(true);
+          }
           return 0;
         }
         return prev - 1;
@@ -237,6 +274,7 @@ const AssessmentScreen = ({ route, navigation }) => {
     }, 1000);
 
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const formatTime = (seconds) => {
@@ -264,61 +302,72 @@ const AssessmentScreen = ({ route, navigation }) => {
     }
   };
 
-  const handleSubmitAssessment = () => {
-    setShowQuitModal(false);
-    Alert.alert(
-      'Submit Assessment',
-      'Are you sure you want to submit your assessment?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Submit', 
-          onPress: () => {
-            // Calculate score and navigate to results
-            navigation.navigate('AssessmentResults', { 
-              assessment, 
-              answers, 
-              questions 
-            });
+  const finishSubmission = () => {
+    submittedRef.current = true;
+    // Calculate score and navigate to results
+    navigation.navigate('AssessmentResults', {
+      assessment,
+      answers,
+      questions
+    });
 
-            // Persist the attempt to Supabase (quiz_attempts). Best-effort, never blocks.
-            (async () => {
-              try {
-                let userId: string | null = null;
-                const raw = await AsyncStorage.getItem('user');
-                const cached = raw ? JSON.parse(raw) : null;
-                if (cached?.id) userId = cached.id;
-                if (!userId && cached?.email) {
-                  const { data } = await supabase.from('users').select('id').eq('email', cached.email).maybeSingle();
-                  userId = data?.id ?? null;
-                }
-                if (!userId) return;
-                const total = questions.length || 1;
-                const correct = questions.filter((q: any) => {
-                  const a = answers[q.id];
-                  if (a === undefined || a === null) return false;
-                  if (typeof q.correctAnswer !== 'undefined') {
-                    if (q.type === 'true_false') return a === q.correctAnswer;
-                    if (q.type === 'multiple_choice') return Number(a) === Number(q.correctAnswer);
-                    return String(a).trim().toLowerCase() === String(q.correctAnswer).trim().toLowerCase();
-                  }
-                  return false;
-                }).length;
-                const scorePct = Math.round((correct / total) * 100);
-                await supabase.from('quiz_attempts').insert({
-                  user_id: userId,
-                  score: scorePct,
-                  passed: scorePct >= 70,
-                });
-              } catch (err) {
-                console.log('Failed to save assessment attempt:', err);
-              }
-            })();
-          }
+    // Persist the attempt to Supabase (quiz_attempts). Best-effort, never blocks.
+    (async () => {
+      try {
+        let userId: string | null = null;
+        const raw = await AsyncStorage.getItem('user');
+        const cached = raw ? JSON.parse(raw) : null;
+        if (cached?.id) userId = cached.id;
+        if (!userId && cached?.email) {
+          const { data } = await supabase.from('users').select('id').eq('email', cached.email).maybeSingle();
+          userId = data?.id ?? null;
         }
-      ]
+        if (!userId) return;
+        const total = questions.length || 1;
+        const correct = questions.filter((q: any) => {
+          const a = answers[q.id];
+          if (a === undefined || a === null) return false;
+          if (typeof q.correctAnswer !== 'undefined') {
+            if (q.type === 'true_false') return a === q.correctAnswer;
+            if (q.type === 'multiple_choice') return Number(a) === Number(q.correctAnswer);
+            return String(a).trim().toLowerCase() === String(q.correctAnswer).trim().toLowerCase();
+          }
+          return false;
+        }).length;
+        const scorePct = Math.round((correct / total) * 100);
+        await supabase.from('quiz_attempts').insert({
+          user_id: userId,
+          score: scorePct,
+          passed: scorePct >= 70,
+        });
+      } catch (err) {
+        console.log('Failed to save assessment attempt:', err);
+      }
+    })();
+  };
+
+  const doSubmit = (auto?: boolean) => {
+    setShowQuitModal(false);
+    if (auto) {
+      // Time expired — auto-submit without a blocking alert (an Alert over the
+      // camera overlay was part of the "stuck at green bar" bug).
+      finishSubmission();
+      return;
+    }
+    Alert.alert(
+      'Time Not Up Yet',
+      'You still have time remaining. Are you sure you want to submit your assessment now?',
+      [
+        { text: 'Keep Answering', style: 'cancel' },
+        { text: 'Submit Now', onPress: () => finishSubmission() },
+      ],
     );
   };
+
+  // Keep the ref pointing at the latest closure so the timer always sees fresh answers.
+  submitFnRef.current = doSubmit;
+
+  const handleSubmitAssessment = () => doSubmit(false);
 
   const handleQuitAssessment = () => {
     setShowQuitModal(false);
@@ -482,7 +531,7 @@ const AssessmentScreen = ({ route, navigation }) => {
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
   return (
-    <ProctorGate active={!!proctored}>
+    <ProctorGate active>
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
