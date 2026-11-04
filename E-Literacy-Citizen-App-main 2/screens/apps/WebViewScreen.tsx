@@ -12,6 +12,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useTheme } from '../../components/ThemeContext';
+import TranslatedText from '../TranslatedText';
 
 const WebViewScreen = ({ route, navigation }) => {
   const { uri, title } = route.params || {};
@@ -98,7 +99,7 @@ const WebViewScreen = ({ route, navigation }) => {
           accessibilityRole="button"
           accessibilityLabel="Cancel and exit AR experience"
         >
-          <Text style={styles.cancelButtonText}>Cancel</Text>
+          <TranslatedText style={styles.cancelButtonText}>Cancel</TranslatedText>
         </TouchableOpacity>
       </View>
 
@@ -173,7 +174,7 @@ const WebViewScreen = ({ route, navigation }) => {
               setLoading(true);
             }}
           >
-            <Text style={styles.retryButtonText}>Retry</Text>
+            <TranslatedText style={styles.retryButtonText}>Retry</TranslatedText>
           </TouchableOpacity>
         </View>
       )}

@@ -16,6 +16,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../config/supabase';
 import { useTheme } from '../../components/ThemeContext';
+import TranslatedText from '../../components/TranslatedText';
 
 /**
  * Admin Dashboard — citizen app entry point for admin tooling.
@@ -197,18 +198,18 @@ const AdminDashboard = ({ navigation }: any) => {
     <View style={[styles.statCard, { backgroundColor: cardBg, shadowOpacity: isDark ? 0 : 0.08 }]}>
       <Ionicons name={icon} size={20} color={tint || '#2563eb'} />
       <Text style={[styles.statValue, { color: colors.text }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: subText }]} numberOfLines={1}>
-        {label}
-      </Text>
+      <TranslatedText style={[styles.statLabel, { color: subText }]} numberOfLines={1}>
+        {String(label)}
+      </TranslatedText>
     </View>
   );
 
   const Bar = ({ label, count, max, tint }: any) => (
     <View style={{ marginBottom: 10 }}>
       <View style={styles.barRow}>
-        <Text style={[styles.barLabel, { color: colors.text }]} numberOfLines={1}>
-          {label}
-        </Text>
+        <TranslatedText style={[styles.barLabel, { color: colors.text }]} numberOfLines={1}>
+          {String(label)}
+        </TranslatedText>
         <Text style={[styles.barCount, { color: subText }]}>{count}</Text>
       </View>
       <View style={[styles.barTrack, { backgroundColor: isDark ? '#2a2a2a' : '#eee' }]}>
@@ -225,7 +226,7 @@ const AdminDashboard = ({ navigation }: any) => {
   );
 
   const SectionTitle = ({ children }: any) => (
-    <Text style={[styles.sectionTitle, { color: colors.text }]}>{children}</Text>
+    <TranslatedText style={[styles.sectionTitle, { color: colors.text }]}>{children}</TranslatedText>
   );
 
   const renderChip = (label: string, active: boolean, onPress: () => void, tint?: string) => (
@@ -238,7 +239,7 @@ const AdminDashboard = ({ navigation }: any) => {
         active && { backgroundColor: tint || '#2563eb' },
       ]}
     >
-      <Text style={{ color: active ? '#fff' : colors.text, fontSize: 12, fontWeight: '600' }}>{label}</Text>
+      <TranslatedText style={{ color: active ? '#fff' : colors.text, fontSize: 12, fontWeight: '600' }}>{String(label)}</TranslatedText>
     </TouchableOpacity>
   );
 
@@ -271,7 +272,7 @@ const AdminDashboard = ({ navigation }: any) => {
       <View style={[styles.card, { backgroundColor: cardBg }]}>
         <SectionTitle>Most enrolled courses</SectionTitle>
         {topCourses.length === 0 ? (
-          <Text style={{ color: subText }}>No published courses yet.</Text>
+          <TranslatedText style={{ color: subText }}>No published courses yet.</TranslatedText>
         ) : (
           topCourses.map((c) => (
             <View key={c.id} style={[styles.listRow, { borderBottomColor: isDark ? '#2a2a2a' : '#f0f0f0' }]}>
@@ -279,9 +280,9 @@ const AdminDashboard = ({ navigation }: any) => {
                 <Text style={{ color: colors.text, fontWeight: '600' }} numberOfLines={1}>
                   {c.title}
                 </Text>
-                <Text style={{ color: subText, fontSize: 12 }}>
-                  {c.level} · {c.enrolled} enrolled · {c.completions} completed
-                </Text>
+                <TranslatedText style={{ color: subText, fontSize: 12 }}>
+                  {`${c.level} · ${c.enrolled} enrolled · ${c.completions} completed`}
+                </TranslatedText>
               </View>
               <Ionicons name="chevron-forward" size={16} color={subText} />
             </View>
@@ -291,10 +292,9 @@ const AdminDashboard = ({ navigation }: any) => {
 
       <View style={[styles.card, { backgroundColor: cardBg }]}>
         <SectionTitle>Network</SectionTitle>
-        <Text style={{ color: subText, lineHeight: 20 }}>
-          {hubs.length} digital literacy hubs · {metrics.length} provinces reporting ·{' '}
-          {admins.length} admin{admins.length === 1 ? '' : 's'}
-        </Text>
+        <TranslatedText style={{ color: subText, lineHeight: 20 }}>
+          {`${hubs.length} digital literacy hubs · ${metrics.length} provinces reporting · ${admins.length} admin${admins.length === 1 ? '' : 's'}`}
+        </TranslatedText>
       </View>
     </>
   );
@@ -328,10 +328,10 @@ const AdminDashboard = ({ navigation }: any) => {
         <View style={[styles.card, { backgroundColor: cardBg }]}>
           <SectionTitle>Enrollment & completion by level</SectionTitle>
           <View style={styles.tableHead}>
-            <Text style={[styles.tableHeadTxt, { flex: 1.2, color: subText }]}>Level</Text>
-            <Text style={[styles.tableHeadTxt, { flex: 1, color: subText }]}>Learners</Text>
-            <Text style={[styles.tableHeadTxt, { flex: 1, color: subText }]}>Enrolled</Text>
-            <Text style={[styles.tableHeadTxt, { flex: 1, color: subText }]}>Done</Text>
+            <TranslatedText style={[styles.tableHeadTxt, { flex: 1.2, color: subText }]}>Level</TranslatedText>
+            <TranslatedText style={[styles.tableHeadTxt, { flex: 1, color: subText }]}>Learners</TranslatedText>
+            <TranslatedText style={[styles.tableHeadTxt, { flex: 1, color: subText }]}>Enrolled</TranslatedText>
+            <TranslatedText style={[styles.tableHeadTxt, { flex: 1, color: subText }]}>Done</TranslatedText>
           </View>
           {levelRows.map((r) => (
             <View key={r.lvl} style={[styles.tableRow, { borderTopColor: isDark ? '#2a2a2a' : '#f0f0f0' }]}>
@@ -346,7 +346,7 @@ const AdminDashboard = ({ navigation }: any) => {
         <View style={[styles.card, { backgroundColor: cardBg }]}>
           <SectionTitle>Provinces (from hub metrics)</SectionTitle>
           {metrics.length === 0 ? (
-            <Text style={{ color: subText }}>No province metrics recorded yet.</Text>
+            <TranslatedText style={{ color: subText }}>No province metrics recorded yet.</TranslatedText>
           ) : (
             [...metrics]
               .sort((a, b) => (b.learner_count || 0) - (a.learner_count || 0))
@@ -367,9 +367,9 @@ const AdminDashboard = ({ navigation }: any) => {
           {attempts.length === 0 ? (
             <View style={{ paddingVertical: 8 }}>
               <Ionicons name="videocam-outline" size={22} color={subText} />
-              <Text style={{ color: subText, marginTop: 6 }}>
+              <TranslatedText style={{ color: subText, marginTop: 6 }}>
                 No quiz attempts recorded yet. Attempts are saved automatically once learners finish proctored quizzes and assessments.
-              </Text>
+              </TranslatedText>
             </View>
           ) : (
             attempts.slice(0, 8).map((a) => (
@@ -378,14 +378,14 @@ const AdminDashboard = ({ navigation }: any) => {
                   <Text style={{ color: colors.text, fontWeight: '600' }} numberOfLines={1}>
                     {courseName(a.course_id)}
                   </Text>
-                  <Text style={{ color: subText, fontSize: 12 }}>
-                    Score {a.score}% · {fmtDate(a.created_at)}
-                  </Text>
+                  <TranslatedText style={{ color: subText, fontSize: 12 }}>
+                    {`Score ${a.score}% · ${fmtDate(a.created_at)}`}
+                  </TranslatedText>
                 </View>
                 <View style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, backgroundColor: a.passed ? '#dcfce7' : '#fee2e2' }}>
-                  <Text style={{ color: a.passed ? '#166534' : '#991b1b', fontSize: 11, fontWeight: '700' }}>
+                  <TranslatedText style={{ color: a.passed ? '#166534' : '#991b1b', fontSize: 11, fontWeight: '700' }}>
                     {a.passed ? 'PASSED' : 'FAILED'}
-                  </Text>
+                  </TranslatedText>
                 </View>
               </View>
             ))
@@ -429,9 +429,9 @@ const AdminDashboard = ({ navigation }: any) => {
         ) : null}
       </View>
 
-      <Text style={{ color: subText, marginBottom: 8 }}>
-        {filteredUsers.length} of {users.length} users
-      </Text>
+      <TranslatedText style={{ color: subText, marginBottom: 8 }}>
+        {`${filteredUsers.length} of ${users.length} users`}
+      </TranslatedText>
 
       {filteredUsers.map((row) => {
         const busy = busyUserId === row.id;
@@ -450,22 +450,22 @@ const AdminDashboard = ({ navigation }: any) => {
                 <Text style={{ color: subText, fontSize: 12 }} numberOfLines={1}>
                   {row.email}
                 </Text>
-                <Text style={{ color: subText, fontSize: 12 }}>
-                  {row.role} · {row.province || '—'} · joined {fmtDate(row.created_at)}
-                </Text>
+                <TranslatedText style={{ color: subText, fontSize: 12 }}>
+                  {`${row.role} · ${row.province || '—'} · joined ${fmtDate(row.created_at)}`}
+                </TranslatedText>
               </View>
               {busy ? <ActivityIndicator size="small" color="#2563eb" /> : null}
             </View>
 
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
-              <Text style={{ color: subText, fontSize: 11, marginRight: 6 }}>Status:</Text>
+              <TranslatedText style={{ color: subText, fontSize: 11, marginRight: 6 }}>Status:</TranslatedText>
               {['active', 'pending', 'approved', 'denied'].map((st) =>
                 renderChip(st, row.status === st, () => handleStatusChange(row, st), st === 'pending' ? '#d97706' : st === 'denied' ? '#dc2626' : '#059669'),
               )}
             </View>
 
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
-              <Text style={{ color: subText, fontSize: 11, marginRight: 6 }}>Role:</Text>
+              <TranslatedText style={{ color: subText, fontSize: 11, marginRight: 6 }}>Role:</TranslatedText>
               {['learner', 'practitioner', 'admin'].map((r) =>
                 renderChip(r, row.role === r, () => handleRoleChange(row, r), r === 'admin' ? '#7c3aed' : r === 'practitioner' ? '#0891b2' : '#2563eb'),
               )}
@@ -473,9 +473,9 @@ const AdminDashboard = ({ navigation }: any) => {
 
             <View style={[styles.userActions, { borderTopColor: isDark ? '#2a2a2a' : '#f0f0f0' }]}>
               <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                <Text style={{ color: subText, fontSize: 12, marginRight: 6 }}>
+                <TranslatedText style={{ color: subText, fontSize: 12, marginRight: 6 }}>
                   {row.is_disabled ? 'Disabled' : 'Enabled'}
-                </Text>
+                </TranslatedText>
                 <Switch
                   value={!row.is_disabled}
                   onValueChange={() => handleToggleDisabled(row)}
@@ -492,7 +492,7 @@ const AdminDashboard = ({ navigation }: any) => {
               <TouchableOpacity onPress={() => handleDelete(row)} disabled={busy} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Ionicons name="trash-outline" size={16} color="#dc2626" />
-                  <Text style={{ color: '#dc2626', fontSize: 12, fontWeight: '700', marginLeft: 4 }}>Delete</Text>
+                  <TranslatedText style={{ color: '#dc2626', fontSize: 12, fontWeight: '700', marginLeft: 4 }}>Delete</TranslatedText>
                 </View>
               </TouchableOpacity>
             </View>
@@ -503,7 +503,7 @@ const AdminDashboard = ({ navigation }: any) => {
       {filteredUsers.length === 0 && !loading ? (
         <View style={{ paddingVertical: 30, alignItems: 'center' }}>
           <Ionicons name="people-outline" size={32} color={subText} />
-          <Text style={{ color: subText, marginTop: 8 }}>No users match your search.</Text>
+          <TranslatedText style={{ color: subText, marginTop: 8 }}>No users match your search.</TranslatedText>
         </View>
       ) : null}
     </>
@@ -522,9 +522,9 @@ const AdminDashboard = ({ navigation }: any) => {
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={{ color: colors.text, fontSize: 17, fontWeight: '700', flex: 1, marginLeft: 10 }} numberOfLines={1}>
+        <TranslatedText style={{ color: colors.text, fontSize: 17, fontWeight: '700', flex: 1, marginLeft: 10 }} numberOfLines={1}>
           Admin Dashboard
-        </Text>
+        </TranslatedText>
         <TouchableOpacity onPress={loadData} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Ionicons name={loading ? 'refresh' : 'refresh-outline'} size={22} color="#2563eb" />
         </TouchableOpacity>
@@ -548,7 +548,7 @@ const AdminDashboard = ({ navigation }: any) => {
             ]}
           >
             <Ionicons name={t.icon as any} size={16} color={tab === t.id ? '#fff' : colors.text} />
-            <Text style={{ fontSize: 11, marginTop: 2, color: tab === t.id ? '#fff' : colors.text, fontWeight: '600' }}>
+            <TranslatedText style={{ fontSize: 11, marginTop: 2, color: tab === t.id ? '#fff' : colors.text, fontWeight: '600' }}>
               {t.label}
             </Text>
           </TouchableOpacity>
@@ -559,7 +559,7 @@ const AdminDashboard = ({ navigation }: any) => {
         <View style={{ margin: 12, padding: 12, borderRadius: 10, backgroundColor: '#fee2e2' }}>
           <Text style={{ color: '#991b1b', fontWeight: '600' }}>⚠️ {error}</Text>
           <TouchableOpacity onPress={loadData}>
-            <Text style={{ color: '#2563eb', marginTop: 4, fontWeight: '700' }}>Retry</Text>
+            <TranslatedText style={{ color: '#2563eb', marginTop: 4, fontWeight: '700' }}>Retry</TranslatedText>
           </TouchableOpacity>
         </View>
       ) : null}
@@ -567,7 +567,7 @@ const AdminDashboard = ({ navigation }: any) => {
       {loading && users.length === 0 ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator size="large" color="#2563eb" />
-          <Text style={{ color: subText, marginTop: 8 }}>Loading dashboard…</Text>
+          <TranslatedText style={{ color: subText, marginTop: 8 }}>Loading dashboard…</TranslatedText>
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 12, paddingBottom: 40 }}>

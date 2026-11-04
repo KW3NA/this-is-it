@@ -413,6 +413,15 @@ export default {
     signupFailedTitle: 'Signup failed',
     noToken: 'Server did not return a token.',
     tryAgain: 'Please try again',
+    fullNamePlaceholder: 'Full Name',
+    emailPlaceholder: 'Email',
+    passwordPlaceholder: 'Password',
+    confirmPasswordPlaceholder: 'Confirm Password',
+    verifyEmailHeader: 'Verify Your Email',
+    enterOtpPlaceholder: 'Enter OTP',
+    verifyOtpButton: 'Verify OTP',
+    sendingText: 'Sending...',
+    resendOtp: 'Resend OTP',
   },
   tools: {
     title: 'Tools',
@@ -451,5 +460,10 @@ export default {
     weakPassword: 'Password must be at least 8 characters.',
     passwordsDontMatch: 'Passwords do not match.',
     noInternet: 'No internet connection.',
+  },
+  proctor: {
+    startingSecureAssessment: 'Starting secure assessment…',
+    verifyingCameraMic: 'Verifying camera and microphone',
+    doNotCoverCamera: 'Do not cover your camera',
   },
 };

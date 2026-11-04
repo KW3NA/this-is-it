@@ -56,6 +56,7 @@ export default {
     phone: 'Inombolo yefoni',
     forgotPassword: 'Uwutshekile ligama lokuvikela?',
     resetPassword: 'Buyisela ligama lokuvikela',
+    dontHaveAccount: 'Unako i-akhawunti?',
     alreadyHaveAccount: 'Usenayo i-akhawunti?',
     loginTitle: 'Siyakwamukela futsi',
     loginSubtitle: 'Ngena kute uchubuke ufundza',
@@ -407,6 +408,15 @@ export default {
     signupFailedTitle: 'Signup failed',
     noToken: 'Server did not return a token.',
     tryAgain: 'Please try again',
+    fullNamePlaceholder: 'Ligama lelilicocone',
+    emailPlaceholder: 'I-imeyili',
+    passwordPlaceholder: 'Liphassword',
+    confirmPasswordPlaceholder: 'Cinisekisa liphassword',
+    verifyEmailHeader: 'Cinisekisa i-imeyili yakho',
+    enterOtpPlaceholder: 'Faka i-OTP',
+    verifyOtpButton: 'Cinisekisa i-OTP',
+    sendingText: 'Iyayitfumelwa...',
+    resendOtp: 'Tfumela i-OTP futsi',
   },
   tools: {
     title: 'Tools',
@@ -447,4 +457,9 @@ export default {
     noInternet: 'No internet connection.',
   },
 
+  proctor: {
+    startingSecureAssessment: 'Ku ncala kuhlolwa lokuphephile…',
+    verifyingCameraMic: 'Ku tiyisekiswa likhamera nemayikhrofoni',
+    doNotCoverCamera: 'Ungakhiphi likhamera lakho',
+  },
 };

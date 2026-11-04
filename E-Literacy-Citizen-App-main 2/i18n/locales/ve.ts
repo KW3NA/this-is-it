@@ -56,6 +56,7 @@ export default {
     phone: 'Nomboro ya foni',
     forgotPassword: 'U khohone phasiwede?',
     resetPassword: 'Sia phasiwede sia tsha',
+    dontHaveAccount: 'Ni sa na na akhawunti?',
     alreadyHaveAccount: 'U kha u na akunṱi?',
     loginTitle: 'U tou vhuswa nga mutambe',
     loginSubtitle: 'Dingedza uri u bvelele phanḓa u dudza',
@@ -407,6 +408,15 @@ export default {
     signupFailedTitle: 'Signup failed',
     noToken: 'Server did not return a token.',
     tryAgain: 'Please try again',
+    fullNamePlaceholder: 'Dzina ḽo ṱuṱuwedzaho',
+    emailPlaceholder: 'Imeili',
+    passwordPlaceholder: 'Pfhamithi',
+    confirmPasswordPlaceholder: 'Tendeledza pfhamithi',
+    verifyEmailHeader: 'Tendekedza imeili yawe',
+    enterOtpPlaceholder: 'Dzwala OTP',
+    verifyOtpButton: 'Tendekedza OTP',
+    sendingText: 'Zwi tshi dzhengwa...',
+    resendOtp: 'Tuma OTP hune',
   },
   tools: {
     title: 'Tools',
@@ -447,4 +457,9 @@ export default {
     noInternet: 'No internet connection.',
   },
 
+  proctor: {
+    startingSecureAssessment: 'Hu thoma u linga hu phaheleleha…',
+    verifyingCameraMic: 'Hu tugedza khamera na maikorofoni',
+    doNotCoverCamera: 'Ni songo fhumudza khamera yau',
+  },
 };

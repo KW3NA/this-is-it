@@ -56,6 +56,7 @@ export default {
     phone: 'Inombolo yefowuni',
     forgotPassword: 'Uyilibale iphasiwedi?',
     resetPassword: 'Buyisela iphasiwedi',
+    dontHaveAccount: 'Unayo na i-akhawunti?',
     alreadyHaveAccount: 'Sele unayo i-akhawunti?',
     loginTitle: 'Wamkelekile ngokutsha',
     loginSubtitle: 'Ngena ukuze uqhubeke ufunda',
@@ -407,6 +408,15 @@ export default {
     signupFailedTitle: 'Signup failed',
     noToken: 'Server did not return a token.',
     tryAgain: 'Please try again',
+    fullNamePlaceholder: 'Igama elipheleleyo',
+    emailPlaceholder: 'Imeyile',
+    passwordPlaceholder: 'Iphasiwedi',
+    confirmPasswordPlaceholder: 'Qinisekisa iphasiwedi',
+    verifyEmailHeader: 'Qinisekisa imeyile yakho',
+    enterOtpPlaceholder: 'Ngenisa i-OTP',
+    verifyOtpButton: 'Qinisekisa i-OTP',
+    sendingText: 'Iyathumela...',
+    resendOtp: 'Thumela i-OTP kwakhona',
   },
   tools: {
     title: 'Tools',
@@ -447,4 +457,9 @@ export default {
     noInternet: 'No internet connection.',
   },
 
+  proctor: {
+    startingSecureAssessment: 'Kuqalisovavanyo olukhuselekileyo…',
+    verifyingCameraMic: 'Kuqinisekiswa ikhamera nomamkhathi',
+    doNotCoverCamera: 'Ungayiqinisi ikhamera yakho',
+  },
 };

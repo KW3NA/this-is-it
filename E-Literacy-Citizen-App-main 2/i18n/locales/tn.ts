@@ -56,6 +56,7 @@ export default {
     phone: 'Nomoro ya mogala',
     forgotPassword: 'O lagaditse parole?',
     resetPassword: 'Simolola parole sesha',
+    dontHaveAccount: 'A o na le akhaonto?',
     alreadyHaveAccount: 'O setse o na le akhaonto?',
     loginTitle: 'Rea go amogela gape',
     loginSubtitle: 'Tsena go tswelela o ithuta',
@@ -407,6 +408,15 @@ export default {
     signupFailedTitle: 'Signup failed',
     noToken: 'Server did not return a token.',
     tryAgain: 'Please try again',
+    fullNamePlaceholder: 'Leina le le feletseng',
+    emailPlaceholder: 'Imeile',
+    passwordPlaceholder: 'Phasewete',
+    confirmPasswordPlaceholder: 'Netefatsa phasewete',
+    verifyEmailHeader: 'Netefatsa imeile ya gago',
+    enterOtpPlaceholder: 'Tsenya OTP',
+    verifyOtpButton: 'Netefatsa OTP',
+    sendingText: 'E a romela...',
+    resendOtp: 'Romela OTP gape',
   },
   tools: {
     title: 'Tools',
@@ -447,4 +457,9 @@ export default {
     noInternet: 'No internet connection.',
   },
 
+  proctor: {
+    startingSecureAssessment: 'Tekolo e e sireletsegileng e a simolola…',
+    verifyingCameraMic: 'Go netefadiwa khamera le maekerofounu',
+    doNotCoverCamera: 'O se ka wa thibela khamera ya gago',
+  },
 };

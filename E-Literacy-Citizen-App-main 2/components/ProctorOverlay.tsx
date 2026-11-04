@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
+import TranslatedText from './TranslatedText';
 
 /**
  * ProctorOverlay - Mandatory camera + microphone proctoring for assessments/quizzes.
@@ -112,8 +113,8 @@ const ProctorOverlayInner: React.FC<{
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <FontAwesome6 name="shield-halved" size={48} color="#E67012" />
-        <Text style={styles.title}>Starting secure assessment…</Text>
-        <Text style={styles.subtitle}>Verifying camera and microphone</Text>
+        <TranslatedText style={styles.title}>Starting secure assessment…</TranslatedText>
+        <TranslatedText style={styles.subtitle}>Verifying camera and microphone</TranslatedText>
       </View>
     );
   }
@@ -171,7 +172,7 @@ const ProctorOverlayInner: React.FC<{
         <Text style={styles.sessionText}>
           PROCTORED • REC {elapsed}
         </Text>
-        <Text style={styles.sessionText}>Do not cover your camera</Text>
+        <TranslatedText style={styles.sessionText}>Do not cover your camera</TranslatedText>
       </View>
       <View style={styles.content}>{children}</View>
     </View>
