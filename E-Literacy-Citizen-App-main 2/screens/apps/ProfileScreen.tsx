@@ -168,7 +168,7 @@ const ProfileScreen = ({ navigation }: Props) => {
     try {
       const loc = await requestAndFetchLocation();
       if (!loc || !loc.permission) {
-        Alert.alert('Permission Needed', 'Location permission is required to update your location.');
+        Alert.alert(t('profile.permissionNeeded'), t('profile.locationPermissionRequired'));
         return;
       }
       const { latitude, longitude } = loc.coords;
@@ -188,18 +188,18 @@ const ProfileScreen = ({ navigation }: Props) => {
           setUserData(updated);
           await AsyncStorage.setItem('user', JSON.stringify(updated));
         }
-        Alert.alert('Success', 'Location updated successfully!');
+        Alert.alert(t('profile.success'), t('profile.locationUpdated'));
       } else if (!OPENCAGE_API_KEY) {
         Alert.alert(
-          'No Geocoding Key',
-          'Your position was detected, but no OpenCage API key is configured, so the address could not be resolved.'
+          t('profile.noGeocodingKey'),
+          t('profile.noGeocodingKeyMessage')
         );
       } else {
-        Alert.alert('Error', 'Could not resolve your address. Please try again later.');
+        Alert.alert(t('common.error'), t('profile.addressResolveError'));
       }
     } catch (e) {
       console.error('Location update error:', e);
-      Alert.alert('Error', 'Failed to update location. Make sure location services are enabled.');
+      Alert.alert(t('common.error'), t('profile.locationUpdateFailed'));
     } finally {
       setIsLocLoading(false);
     }
@@ -212,23 +212,23 @@ const ProfileScreen = ({ navigation }: Props) => {
       const response = await sendEmailOtp();
       if (response.status === 'success') {
         Alert.alert(
-          'OTP Sent',
-          'A verification code has been sent to your email address.',
+          t('profile.otpSent'),
+          t('profile.otpSentMessage'),
           [
             {
-              text: 'OK',
+              text: t('common.ok'),
               onPress: () => navigation.navigate('EmailVerification'),
             },
           ]
         );
       } else {
-        Alert.alert('Error', response.message || 'Failed to send verification code');
+        Alert.alert(t('common.error'), response.message || t('profile.sendCodeFailed'));
       }
     } catch (error) {
       console.error('Email verification error:', error);
       Alert.alert(
-        'Error',
-        error instanceof Error ? error.message : 'Failed to send verification code'
+        t('common.error'),
+        error instanceof Error ? error.message : t('profile.sendCodeFailed')
       );
     } finally {
       setIsEmailVerifying(false);
@@ -238,15 +238,15 @@ const ProfileScreen = ({ navigation }: Props) => {
   // 🔹 Logout
   const handleLogout = async () => {
     Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
+      t('profile.logoutConfirmTitle'),
+      t('profile.logoutConfirmMessage'),
       [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Logout',
+          text: t('auth.logout'),
           style: 'destructive',
           onPress: async () => {
             setIsLogoutLoading(true);
@@ -279,7 +279,7 @@ const ProfileScreen = ({ navigation }: Props) => {
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission Needed', 'We need photo library access.');
+      Alert.alert(t('profile.permissionNeeded'), t('profile.photoPermissionNeeded'));
       return;
     }
     
@@ -298,13 +298,13 @@ const ProfileScreen = ({ navigation }: Props) => {
         
         // Validate file size (max 5MB)
         if (asset.fileSize && asset.fileSize > 5 * 1024 * 1024) {
-          Alert.alert('Image Too Large', 'Please select an image smaller than 5MB.');
+          Alert.alert(t('profile.imageTooLarge'), t('profile.imageTooLargeMessage'));
           return;
         }
         
         // Validate dimensions (optional - warn if too small)
         if (asset.width && asset.height && (asset.width < 100 || asset.height < 100)) {
-          Alert.alert('Image Too Small', 'Please select an image at least 100x100 pixels.');
+          Alert.alert(t('profile.imageTooSmall'), t('profile.imageTooSmallMessage'));
           return;
         }
         
@@ -313,13 +313,13 @@ const ProfileScreen = ({ navigation }: Props) => {
       }
     } catch (error) {
       console.error('Image picker error:', error);
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      Alert.alert(t('common.error'), t('profile.pickImageFailed'));
     }
   };
 
   const handleSaveImage = async () => {
     if (!tempImage) {
-      Alert.alert('Error', 'No image selected');
+      Alert.alert(t('common.error'), t('profile.noImageSelected'));
       return;
     }
     
@@ -362,12 +362,12 @@ const ProfileScreen = ({ navigation }: Props) => {
       setIsModalVisible(false);
       setTempImage(null);
       
-      Alert.alert('Success', 'Profile picture updated successfully!');
+      Alert.alert(t('profile.success'), t('profile.pictureUpdated'));
     } catch (error) {
       console.error('❌ Profile picture upload error:', error);
       
       // Determine error message
-      let errorMessage = 'Failed to upload profile picture. Please try again.';
+      let errorMessage = t('profile.pictureUploadFailed');
       
       if (error instanceof Error) {
         errorMessage = error.message;
@@ -377,7 +377,7 @@ const ProfileScreen = ({ navigation }: Props) => {
         errorMessage = String(error.message);
       }
       
-      Alert.alert('Upload Failed', errorMessage);
+      Alert.alert(t('profile.uploadFailed'), errorMessage);
     } finally {
       setIsUploadingImage(false);
     }
@@ -642,7 +642,7 @@ const ProfileScreen = ({ navigation }: Props) => {
           <View style={[styles.modalContent, { backgroundColor: isDark ? '#2E2E2E' : 'white' }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: isDark ? '#fff' : '#000' }]}>
-                Preview Profile Picture
+                {t('profile.previewPicture')}
               </Text>
               {!isUploadingImage && (
                 <TouchableOpacity onPress={handleCancelImage} style={styles.closeButton}>
@@ -661,8 +661,8 @@ const ProfileScreen = ({ navigation }: Props) => {
             
             <Text style={[styles.modalText, { color: isDark ? '#ccc' : '#666' }]}>
               {isUploadingImage 
-                ? 'Uploading your profile picture...' 
-                : 'Do you want to update your profile picture?'}
+                ? t('profile.uploadingPicture') 
+                : t('profile.updatePictureConfirm')}
             </Text>
             
             <View style={styles.modalButtons}>
@@ -671,7 +671,7 @@ const ProfileScreen = ({ navigation }: Props) => {
                 onPress={handleCancelImage}
                 disabled={isUploadingImage}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.saveButton, isUploadingImage && { opacity: 0.7 }]}
@@ -682,7 +682,7 @@ const ProfileScreen = ({ navigation }: Props) => {
                   <Ionicons name="sync" size={16} color="#fff" style={{ marginRight: 8 }} />
                 )}
                 <Text style={styles.saveButtonText}>
-                  {isUploadingImage ? 'Uploading...' : 'Save Changes'}
+                  {isUploadingImage ? t('profile.uploading') : t('profile.saveChanges')}
                 </Text>
               </TouchableOpacity>
             </View>

@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,17 +16,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 import { RootStackParamList } from '../../navigation/types';
-import TranslatedText from '../../components/TranslatedText';
 import { useLanguage, getLanguageName, SupportedLanguage } from '../../components/LanguageContext';
 import { useTheme } from '../../components/ThemeContext';
-
-const notificationTones = [
-  { label: 'Default', value: 'default' },
-  { label: 'Chime', value: 'chime' },
-  { label: 'Bell', value: 'bell' },
-  { label: 'Alert', value: 'alert' },
-];
 
 // All languages supported by the app (must match LanguageContext.SupportedLanguage)
 const languageOptions: SupportedLanguage[] = ['en', 'af', 'zu', 'xh', 'tn', 've', 'ts', 'nso', 'st', 'nr', 'ss'];
@@ -36,6 +31,13 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 const SettingsScreen: React.FC<Props> = ({ navigation }) => {
   const { isDark, toggleTheme, colors } = useTheme();
   const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
+  const notificationTones = [
+    { label: t('settings.toneDefault'), value: 'default' },
+    { label: t('settings.toneChime'), value: 'chime' },
+    { label: t('settings.toneBell'), value: 'bell' },
+    { label: t('settings.toneAlert'), value: 'alert' },
+  ];
   const [notificationTone, setNotificationTone] = useState('default');
   const [enableNotifications, setEnableNotifications] = useState(true);
   const [useCellular, setUseCellular] = useState(false);
@@ -69,9 +71,9 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
         SETTINGS_KEY,
         JSON.stringify({ enableNotifications, useCellular, offlineMode, notificationTone })
       );
-      Alert.alert('Saved', 'Your settings have been saved.');
+      Alert.alert(t('settings.saved'), t('settings.settingsSaved'));
     } catch {
-      Alert.alert('Error', 'Could not save your settings. Please try again.');
+      Alert.alert(t('common.error'), t('settings.settingsSaveError'));
     }
   };
 
@@ -87,7 +89,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <FontAwesome6 name="arrow-left" size={20} color="#E67012" />
         </TouchableOpacity>
-        <TranslatedText style={[styles.title, { color: colors.primary }]}>Settings</TranslatedText>
+        <Text style={[styles.title, { color: colors.primary }]}>{t('settings.title')}</Text>
         <View style={{ width: 36 }} />
       </View>
 
@@ -97,7 +99,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
           <View style={[styles.itemRow, styles.firstRow]}>
             <View style={styles.optionLeft}>
               <FontAwesome6 name="moon" size={18} color="#E67012" style={styles.icon} />
-              <TranslatedText style={[styles.label, { color: colors.text }]}>Dark Mode</TranslatedText>
+              <Text style={[styles.label, { color: colors.text }]}>{t('settings.darkMode')}</Text>
             </View>
             <Switch
               value={isDark}
@@ -110,7 +112,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.itemRow}>
             <View style={styles.optionLeft}>
               <FontAwesome6 name="bell" size={18} color="#E67012" style={styles.icon} />
-              <TranslatedText style={[styles.label, { color: colors.text }]}>Enable Notifications</TranslatedText>
+              <Text style={[styles.label, { color: colors.text }]}>{t('settings.enableNotifications')}</Text>
             </View>
             <Switch
               value={enableNotifications}
@@ -123,7 +125,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.itemRow}>
             <View style={styles.optionLeft}>
               <FontAwesome6 name="signal" size={18} color="#E67012" style={styles.icon} />
-              <TranslatedText style={[styles.label, { color: colors.text }]}>Use Cellular Data</TranslatedText>
+              <Text style={[styles.label, { color: colors.text }]}>{t('settings.useCellular')}</Text>
             </View>
             <Switch
               value={useCellular}
@@ -136,7 +138,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
           <View style={[styles.itemRow, styles.lastRow]}>
             <View style={styles.optionLeft}>
               <FontAwesome6 name="link-slash" size={18} color="#E67012" style={styles.icon} />
-              <TranslatedText style={[styles.label, { color: colors.text }]}>Offline Mode</TranslatedText>
+              <Text style={[styles.label, { color: colors.text }]}>{t('settings.offlineMode')}</Text>
             </View>
             <Switch
               value={offlineMode}
@@ -152,7 +154,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
           <TouchableOpacity style={[styles.itemRow, styles.firstRow]} onPress={openLangModal}>
             <View style={styles.optionLeft}>
               <Ionicons name="language-outline" size={20} color="#E67012" style={styles.icon} />
-              <TranslatedText style={[styles.label, { color: colors.text }]}>Language</TranslatedText>
+              <Text style={[styles.label, { color: colors.text }]}>{t('settings.language')}</Text>
             </View>
             <View style={styles.valueRight}>
               <Text style={styles.valueText}>{getLanguageName(language)}</Text>
@@ -163,7 +165,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
           <View style={[styles.itemRow, styles.lastRow]}>
             <View style={styles.optionLeft}>
               <Ionicons name="musical-notes-outline" size={20} color="#E67012" style={styles.icon} />
-              <TranslatedText style={[styles.label, { color: colors.text }]}>Notification Tone</TranslatedText>
+              <Text style={[styles.label, { color: colors.text }]}>{t('settings.notificationTone')}</Text>
             </View>
             <View style={styles.toneButtons}>
               {notificationTones.map((tone) => {
@@ -193,7 +195,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
               end={{ x: 1, y: 0 }}
               style={styles.actionButton}
             >
-              <TranslatedText style={[styles.actionText, { color: '#fff' }]}>Save Changes</TranslatedText>
+              <Text style={[styles.actionText, { color: '#fff' }]}>{t('profile.saveChanges')}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
@@ -204,7 +206,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
               end={{ x: 1, y: 0 }}
               style={styles.actionButton}
             >
-              <TranslatedText style={[styles.actionText, { color: '#fff' }]}>Cancel</TranslatedText>
+              <Text style={[styles.actionText, { color: '#fff' }]}>{t('common.cancel')}</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -212,11 +214,12 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Language selection modal */}
       {isLangModalVisible && (
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={StyleSheet.absoluteFill}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, isDark && { backgroundColor: '#1e1e1e' }]}>
-            <TranslatedText style={[styles.modalTitle, { color: isDark ? '#fff' : '#000' }]}>
-              Select Language
-            </TranslatedText>
+            <Text style={[styles.modalTitle, { color: isDark ? '#fff' : '#000' }]}>
+              {t('profile.selectLanguageTitle')}
+            </Text>
             <ScrollView style={{ maxHeight: 320 }} showsVerticalScrollIndicator={false}>
               {languageOptions.map((code) => {
                 const active = pendingLang === code;
@@ -224,6 +227,8 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
                   <TouchableOpacity
                     key={code}
                     onPress={() => setPendingLang(code)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: active }}
                     style={[styles.langOption, active && styles.langOptionActive]}
                   >
                     <Text style={[styles.langOptionText, active && styles.langOptionTextActive]}>
@@ -239,7 +244,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
                 onPress={() => setIsLangModalVisible(false)}
                 style={styles.modalCancelBtn}
               >
-                <TranslatedText style={{ color: '#7e7d7d', fontWeight: '600' }}>Cancel</TranslatedText>
+                <Text style={{ color: '#7e7d7d', fontWeight: '600' }}>{t('common.cancel')}</Text>
               </TouchableOpacity>
               <LinearGradient
                 colors={['#FF9800', '#FF6D00']}
@@ -254,12 +259,13 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
                     setIsLangModalVisible(false);
                   }}
                 >
-                  <TranslatedText style={{ color: '#fff', fontWeight: 'bold' }}>Save</TranslatedText>
+                  <Text style={{ color: '#fff', fontWeight: 'bold' }}>{t('common.save')}</Text>
                 </TouchableOpacity>
               </LinearGradient>
             </View>
           </View>
         </View>
+        </KeyboardAvoidingView>
       )}
     </SafeAreaView>
   );
