@@ -15,7 +15,7 @@ const privacyPoints = [
   "No Unwanted Sharing – We never sell or share your personal details with third parties.",
   "Transparency – We only collect information needed to improve your learning journey.",
   "Control in Your Hands – You decide what to share, update, or delete at any time.",
-  "Safe Learning – Assessments, progress, and CV details remain private and visible only to you (and authorized admins if required).",
+  "Safe Learning – Assessments, progress, and CV details remain private and visible only to you.",
   "Trusted Standards – We follow national and global data protection standards to keep you safe online.",
 ];
 
