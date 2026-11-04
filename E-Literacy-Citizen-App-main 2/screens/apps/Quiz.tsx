@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -120,13 +120,13 @@ const Quiz = ({ navigation, route }: any) => {
   };
 
   useEffect(() => {
-    if (timeLeft > 0 && !showResult) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    if (timeLeft > 0 && !showResult && !showFinalResult) {
+      const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0) {
+    } else if (timeLeft === 0 && !showAd && !showFinalResult) {
       setShowAd(true);
     }
-  }, [timeLeft, showResult]);
+  }, [timeLeft, showResult, showFinalResult, showAd]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -186,6 +186,7 @@ const Quiz = ({ navigation, route }: any) => {
   if (showResult && showFinalResult) {
     return (
       <SafeAreaView style={{ alignItems: "center",  flex: 1, padding: 20,backgroundColor: isDark ? '#1c1c1e' : colors.background }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }} showsVerticalScrollIndicator={false}>
         <View style={styles.resultContainer}>
           <Image 
             source={require('../../assets/trophy.gif')} 
@@ -201,54 +202,65 @@ const Quiz = ({ navigation, route }: any) => {
           
           {userAnswers.map((answer, index) => {
             const question = questions[index];
+            if (!question) return null;
             const isCorrect = answer === question.correct;
             if (isCorrect) return null;
+            const yourAnswer = answer >= 0 ? question.options?.[answer] ?? '(unanswered)' : '(unanswered)';
             
             return (
               <View key={index} style={[styles.wrongAnswerContainer, { backgroundColor: isDark ? '#444' : '#ffebee' }]}>
                 <TranslatedText style={[styles.wrongQuestionText, { color: colors.text }]}>
                   Q{index + 1}: {question.question}
                 </TranslatedText>
-                <TranslatedText style={styles.wrongAnswerText}>
-                  Your answer: {question.options[answer]}
+                <TranslatedText style={[styles.wrongAnswerText, { color: '#d32f2f' }]}>
+                  Your answer: {yourAnswer}
                 </TranslatedText>
-                <TranslatedText style={styles.correctAnswerText}>
-                  Correct answer: {question.options[question.correct]}
+                <TranslatedText style={[styles.correctAnswerText, { color: '#2e7d32' }]}>
+                  Correct answer: {question.options?.[question.correct] ?? ''}
                 </TranslatedText>
               </View>
             );
           })}
           <TouchableOpacity 
-            style={[styles.button, { backgroundColor: "#00AA00" }]}
+            style={[styles.button, { backgroundColor: "#00AA00", marginTop: 10 }]}
             onPress={resetQuiz}
           >
             <TranslatedText style={styles.buttonText}>Try Again</TranslatedText>
 
           </TouchableOpacity >
-          <TouchableOpacity onPress={() => navigation.navigate('ResumeCourse', { courseId })} style={{ marginTop: 15, paddingHorizontal: 0 }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ResumeCourse', { courseId })}
+            style={{ marginTop: 15, borderRadius: 8, overflow: 'hidden' }}
+          >
             <LinearGradient
-                          colors={['#FF9800', '#FF6D00']}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
-                          style={[StyleSheet.absoluteFill, { borderRadius: 8 }]}
-                        />
-                        <TranslatedText style={[styles.buttonText, {paddingHorizontal: 40, paddingVertical: 12}]}>Return to Course Menu</TranslatedText>
+              colors={['#FF9800', '#FF6D00']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ paddingHorizontal: 40, paddingVertical: 12, borderRadius: 8 }}
+            >
+              <TranslatedText style={styles.buttonText}>Return to Course Menu</TranslatedText>
+            </LinearGradient>
           </TouchableOpacity>
 
         </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
 
   return (
     <ProctorGate active={proctored !== false}>
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
       <View style={styles.header}>
         <TranslatedText style={[styles.headerTitle, { color: colors.primary }]}>
           Digital Safety Quiz
         </TranslatedText>
-        <TouchableOpacity onPress={() => setShowQuitModal(true)}>
-          <FontAwesome5 name="door-open" size={20} color={'#FF0000'} style={{ marginRight: 15 }} />
+        <TouchableOpacity onPress={() => setShowQuitModal(true)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <FontAwesome5 name="door-open" size={20} color={'#FF0000'} />
         </TouchableOpacity>
       </View>
 
@@ -260,7 +272,7 @@ const Quiz = ({ navigation, route }: any) => {
 
       <View style={styles.progressContainer}>
         <Text style={[styles.progressText, { color: colors.muted }]}>
-          {currentQuestion + 1} of {questions.length}
+          Question {currentQuestion + 1} of {questions.length}
         </Text>
         <View style={[styles.progressBar, { backgroundColor: colors.muted + '30' }]}>
           <View 
@@ -275,24 +287,31 @@ const Quiz = ({ navigation, route }: any) => {
         </View>
       </View>
 
-      <View style={styles.questionContainer}>
+      <ScrollView
+        style={styles.questionScroll}
+        contentContainerStyle={styles.questionScrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <Image source={{ uri: questions[currentQuestion]?.imageUrl || 'https://webcdn.cfc.com/media/butnbcyr/stay-safe-online_resources_1600x900px-v4-01.png?width=1320&height=951&v=1daea641b7e1d50' }} style={styles.questionImage} />
         <TranslatedText style={[styles.questionText, { color: colors.text }]}>
-          {questions[currentQuestion].question}
+          {questions[currentQuestion]?.question ?? ''}
         </TranslatedText>
         
-        {questions[currentQuestion].options.map((option, index) => (
+        {(questions[currentQuestion]?.options ?? []).map((option, index) => (
           <TouchableOpacity
             key={index}
-            style={[styles.optionButton, { borderColor: colors.primary, backgroundColor:  'rgba(255, 129, 26, 0.56)' }]}
+            style={[styles.optionButton, { borderColor: colors.primary, backgroundColor: isDark ? 'rgba(230, 112, 18, 0.18)' : 'rgba(255, 129, 26, 0.12)' }]}
             onPress={() => handleAnswer(index)}
+            activeOpacity={0.7}
           >
-            <TranslatedText style={[styles.optionText, { color: '#E67012' }]}>
-              {option}
+            <TranslatedText style={[styles.optionText, { color: isDark ? '#F5A15C' : '#E67012' }]}>
+              {String.fromCharCode(65 + index)}. {option}
             </TranslatedText>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
+      </KeyboardAvoidingView>
 
       <Modal
         visible={showQuitModal}
@@ -340,77 +359,88 @@ const Quiz = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 50,
+    padding: 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
+    alignItems: 'center',
+    marginBottom: 12,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginLeft: 115,
+    fontSize: 18,
+    fontWeight: '700',
+    flex: 1,
+    textAlign: 'center',
   },
   timerContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   timerText: {
     fontSize: 15,
     fontWeight: 'bold',
   },
   progressContainer: {
-    marginBottom: 30,
-    paddingHorizontal: 20,
+    marginBottom: 16,
+    paddingHorizontal: 4,
   },
   progressText: {
-    fontSize: 14,
-    marginBottom: 8,
+    fontSize: 13,
+    marginBottom: 6,
+    textAlign: 'center',
   },
   progressBar: {
     height: 6,
     borderRadius: 3,
+    overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
     borderRadius: 3,
   },
-  questionContainer: {
+  questionScroll: {
     flex: 1,
-    paddingHorizontal: 20,
+  },
+  questionScrollContent: {
+    paddingHorizontal: 4,
+    paddingBottom: 24,
+    flexGrow: 1,
+  },
+  questionContainer: {
+    paddingHorizontal: 4,
   },
   questionText: {
     fontSize: 18,
-    fontWeight: '500',
-    marginBottom: 30,
+    fontWeight: '600',
+    marginBottom: 20,
     lineHeight: 26,
     textAlign: 'center',
   },
   questionImage:{
     width: '100%',
-    objectFit: 'contain',
-    height: 180,
-    marginBottom: 20,
+    height: 160,
+    marginBottom: 16,
     borderRadius: 10,
+    resizeMode: 'contain',
   },
   optionButton: {
-    padding: 16,
-    borderWidth: 2,
-    borderRadius: 8,
-    borderColor: '#E67012',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderWidth: 1.5,
+    borderRadius: 10,
     marginBottom: 12,
-    backgroundColor: 'rgba(255, 129, 26, 0.56)',
   },
   optionText: {
     fontSize: 16,
-    color: '#E67012',
     fontWeight: '500',
+    lineHeight: 22,
   },
   resultContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
   },
   resultTitle: {
     fontSize: 24,

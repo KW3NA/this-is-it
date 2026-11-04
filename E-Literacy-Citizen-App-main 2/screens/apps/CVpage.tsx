@@ -15,7 +15,7 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-import { TranslatedText } from '../../components/TranslatedText';
+import TranslatedText from '../../components/TranslatedText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome6 } from '@expo/vector-icons';
 import BottomTabBar from '../../components/BottomTabBar'; // Assuming this path is correct

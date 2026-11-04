@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Linking, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { TranslatedText } from '../../components/TranslatedText';
+import TranslatedText from '../../components/TranslatedText';
 import { useTheme } from '../../components/ThemeContext';
 import BottomTabBar from '../../components/BottomTabBar';
 
