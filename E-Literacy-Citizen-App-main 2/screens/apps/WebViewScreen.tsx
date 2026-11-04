@@ -1,14 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { 
-  StyleSheet, 
-  View, 
-  ActivityIndicator, 
-  Alert, 
-  SafeAreaView, 
-  TouchableOpacity,
-  Text 
-} from 'react-native';
+  StyleSheet, View, ActivityIndicator, Alert, TouchableOpacity, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useTheme } from '../../components/ThemeContext';

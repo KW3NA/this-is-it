@@ -6,10 +6,29 @@ import { useLanguage, I18N_LANGUAGES } from './LanguageContext';
 import { TranslationService } from './translation';
 import { keyForString } from '../i18n/stringCatalog';
 
-type TranslatedTextProps = TextProps & {
-  children: string | number | undefined | null;
+type TranslatedTextProps = Omit<TextProps, 'children'> & {
+  children?: React.ReactNode;
   fallbackToOriginal?: boolean;
 };
+
+/**
+ * Flatten JSX children (e.g. `<>{a}{' '}{b}</>`, nested <Text>, arrays) into a
+ * plain string so the translation pipeline always receives a renderable string.
+ * This prevents React Native's "Text strings must be rendered within a <Text>
+ * component" error caused by passing raw nodes down to the inner <Text>.
+ */
+function flattenChildren(children: React.ReactNode): string {
+  if (children == null || typeof children === 'boolean') return '';
+  if (typeof children === 'string') return children;
+  if (typeof children === 'number') return String(children);
+  if (Array.isArray(children)) return children.map(flattenChildren).join('');
+  // Nested element (e.g. <Text>…</Text>) or fragment – extract its children.
+  const node = children as { props?: { children?: React.ReactNode } };
+  if (node && typeof node === 'object' && node.props && 'children' in node.props) {
+    return flattenChildren(node.props.children);
+  }
+  return '';
+}
 
 /**
  * Renders text through the i18n pipeline:
@@ -26,7 +45,11 @@ export const TranslatedText: React.FC<TranslatedTextProps> = ({
   const { t: translateKey } = useTranslation();
   const { colors } = useTheme();
 
-  const value = typeof children === 'number' ? String(children) : children ?? '';
+  const rawValue = flattenChildren(children);
+  // Never let a non-string (object/array) reach the inner <Text> directly.
+  const value = typeof children === 'string' || typeof children === 'number'
+    ? String(children)
+    : rawValue;
   const key = value ? keyForString(String(value)) : null;
 
   // Synchronous static translation for known keys in bundled languages.
@@ -51,10 +74,18 @@ export const TranslatedText: React.FC<TranslatedTextProps> = ({
     return () => { isMounted = false; };
   }, [value, language, staticText]);
 
-  const displayed = staticText ?? (language === 'en' ? children : dynamicText ?? (fallbackToOriginal ? children : null));
+  const displayed = staticText ?? (language === 'en' ? value : dynamicText ?? (fallbackToOriginal ? value : null));
+
+  // Guarantee the inner <Text> only ever receives a plain string, never raw
+  // JSX nodes/objects (which trigger "Text strings must be rendered within
+  // a <Text> component").
+  const safeDisplayed: string | null =
+    displayed == null ? null : typeof displayed === 'string' || typeof displayed === 'number'
+      ? String(displayed)
+      : rawValue;
 
   return (
-    <Text {...rest} style={[{ color: colors.text }, rest.style]}>{displayed as any}</Text>
+    <Text {...rest} style={[{ color: colors.text }, rest.style]}>{safeDisplayed}</Text>
   );
 };
 
