@@ -9,6 +9,7 @@ import { supabase } from '../../config/supabase';
 import { LinearGradient } from 'expo-linear-gradient';
 import NativeAd from '../../components/NativeAd';
 import ProctorGate from '../../components/ProctorOverlay';
+import { getCourseQuizQuestions } from '../../config/courseContent';
 
 const Quiz = ({ navigation, route }: any) => {
   const { courseId, proctored } = route.params || {};
@@ -68,7 +69,15 @@ const Quiz = ({ navigation, route }: any) => {
     return questionSets[courseId] || questionSets['default'];
   };
 
-  const [questions, setQuestions] = useState<any[]>(getQuestionsForCourse(courseId));
+  // Prefer the full built-in content library (all modules' questions merged);
+  // fall back to the small inline sets above if a course has none.
+  const getInitialQuestions = (id: string) => {
+    const libraryQs = getCourseQuizQuestions(id).map((q) => ({ ...q }));
+    if (libraryQs.length > 0) return libraryQs;
+    return getQuestionsForCourse(id);
+  };
+
+  const [questions, setQuestions] = useState<any[]>(getInitialQuestions(courseId));
 
   useEffect(() => {
     async function loadQuestionsFromSupabase() {

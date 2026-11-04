@@ -6,11 +6,14 @@ import { useTheme } from '../../components/ThemeContext';
 import TranslatedText from '../../components/TranslatedText';
 import {LinearGradient} from 'expo-linear-gradient';
 import ProctorGate from '../../components/ProctorOverlay';
+import { getCourseQuizQuestions } from '../../config/courseContent';
 
 const QuizInstructions = ({ navigation, route }: any) => {
   const { colors } = useTheme();
   const { courseId } = route.params || {};
   const [proctored, setProctored] = useState(false);
+  // Actual number of questions the learner will face for this course.
+  const questionCount = getCourseQuizQuestions(courseId ?? '').length;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -50,7 +53,7 @@ const QuizInstructions = ({ navigation, route }: any) => {
           <View style={styles.infoItem}>
             <FontAwesome5 name="question-circle" size={20} color={colors.primary} />
             <TranslatedText style={[styles.infoText, { color: colors.text }]}>
-              Multiple choice questions
+              {questionCount > 0 ? `${questionCount} questions across all modules — take your time` : 'Multiple choice questions'}
             </TranslatedText>
           </View>
           <View style={styles.infoItem}>

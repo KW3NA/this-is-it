@@ -9,6 +9,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { useLanguage } from '../../components/LanguageContext';
 import TranslatedText from '../../components/TranslatedText';
 import { supabase } from '../../config/supabase';
+import { getCourseModules, getCourseVideo } from '../../config/courseContent';
 
 const { width } = Dimensions.get('window');
 
@@ -46,7 +47,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Beginner',
       tags: ['Devices', 'Internet', 'Basics'],
       imageUrl: 'https://i.pinimg.com/736x/c9/af/43/c9af431cdb9322e4ff4a43af70db96ae.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=wod8gUBxWR4',
+        videoUrl: 'https://www.youtube.com/watch?v=Z1XJFdHlos4',
     },
     '5': {
       id: '5',
@@ -56,7 +57,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Beginner',
       tags: ['Web', 'Navigation', 'Browsing'],
       imageUrl: 'https://i.pinimg.com/1200x/5c/04/4d/5c044dfa3ddd5ef809f1c8e473d9bf35.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=8jLoW7Ee6nY',
+        videoUrl: 'https://www.youtube.com/watch?v=7lpqqmgeLNg',
     },
     '6': {
       id: '6',
@@ -66,7 +67,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Beginner',
       tags: ['Safety', 'Privacy', 'Security'],
       imageUrl: 'https://i.pinimg.com/1200x/fd/d3/8e/fdd38ec2967a3b43678794c61432b22b.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=aO858HyFbKI&ab',
+        videoUrl: 'https://www.youtube.com/watch?v=SUOc3n06wIA',
     },
     '7': {
       id: '7',
@@ -76,7 +77,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Beginner',
       tags: ['Mobile', 'Photos', 'Apps'],
       imageUrl: 'https://i.pinimg.com/736x/57/7d/5b/577d5bb2029524c0070fbf4307114666.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=7TavVZMewpY',
+        videoUrl: 'https://www.youtube.com/watch?v=fEkXavRkzlQ',
     },
     '8': {
       id: '8',
@@ -86,7 +87,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Beginner',
       tags: ['Email', 'Chat', 'Communication'],
       imageUrl: 'https://i.pinimg.com/736x/cd/5d/40/cd5d400c39e3891914066593b96d610c.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=YFktsaCiz0Y',
+        videoUrl: 'https://www.youtube.com/watch?v=a5uT85i9zQU',
     },
     '9': {
       id: '9',
@@ -96,7 +97,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Intermediate',
       tags: ['Productivity', 'Docs', 'Office'],
       imageUrl: 'https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24102584/m365app.jpg?quality=90&strip=all&crop=0,0.24875621890547,100,99.502487562189',
-        videoUrl: 'https://www.youtube.com/watch?v=1-V7lyxrOmQ',
+        videoUrl: 'https://www.youtube.com/watch?v=DGDC954-AO8',
     },
     '10': {
       id: '10',
@@ -106,7 +107,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Intermediate',
       tags: ['Career', 'CV', 'Job Search'],
       imageUrl: 'https://www.flexjobs.com/blog/wp-content/uploads/2021/09/10045333/Job-Searching-Online-11-Best-Practices-You-Need-to-Know-2-2.jpg?w=1024',
-        videoUrl: 'https://www.youtube.com/watch?v=8jLoW7Ee6nY',
+        videoUrl: 'https://www.youtube.com/watch?v=l_C5s4JQHZ4',
     },
     '11': {
       id: '11',
@@ -116,7 +117,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Intermediate',
       tags: ['Email', 'Meetings', 'Collaboration'],
       imageUrl: 'https://i.pinimg.com/1200x/13/f4/d0/13f4d04f47eac56d27d4b9678f86ff6a.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=YFktsaCiz0Y',
+        videoUrl: 'https://www.youtube.com/watch?v=esOIt3-9vlA',
     },
     '12': {
       id: '12',
@@ -126,7 +127,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Intermediate',
       tags: ['Branding', 'Safety', 'Social Media'],
       imageUrl: 'https://www.globalsign.com/application/files/6917/1496/1818/digital-identity-hero-image.webp',
-        videoUrl: 'https://www.youtube.com/watch?v=ANWJHu1hRjI',
+        videoUrl: 'https://www.youtube.com/watch?v=VGETWcjoAUU',
     },
     '13': {
       id: '13',
@@ -136,7 +137,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Intermediate',
       tags: ['Cloud', 'Storage', 'Backup'],
       imageUrl: 'https://i.pinimg.com/1200x/85/1b/74/851b74e4e5e8f285409f567c86a377dc.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=7TavVZMewpY',
+        videoUrl: 'https://www.youtube.com/watch?v=RVMYtnYV4Ds',
     },
     '14': {
       id: '14',
@@ -146,7 +147,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Advanced',
       tags: ['Business', 'Tools', 'Marketing'],
       imageUrl: 'https://i.pinimg.com/736x/2e/6d/82/2e6d82123a4ef5422984ea07fa6ad0cd.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=1-V7lyxrOmQ',
+        videoUrl: 'https://www.youtube.com/watch?v=wpDi7B_NmQ0',
     },
     '15': {
       id: '15',
@@ -156,7 +157,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Advanced',
       tags: ['Security', 'Threats', 'Protection'],
       imageUrl: 'https://i.pinimg.com/736x/0b/8a/48/0b8a48d4343a1eb1fd9581e1048f2f45.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=ANWJHu1hRjI',
+        videoUrl: 'https://www.youtube.com/watch?v=nIoXdkEBl4M',
     },
     '16': {
       id: '16',
@@ -166,7 +167,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Advanced',
       tags: ['Analysis', 'Insights', 'Data'],
       imageUrl: 'https://i.pinimg.com/736x/2b/a2/9c/2ba29c620e03944902f182e748aa8abd.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=8jLoW7Ee6nY',
+        videoUrl: 'https://www.youtube.com/watch?v=aircAruvnKk',
     },
     '17': {
       id: '17',
@@ -176,7 +177,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Advanced',
       tags: ['Design', 'Editing', 'Creativity'],
       imageUrl: 'https://i.pinimg.com/1200x/e5/b3/e3/e5b3e38520b4b0bc4d7a4b1d6b05605f.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=7TavVZMewpY',
+        videoUrl: 'https://www.youtube.com/watch?v=ZZkgC9BHy00',
     },
     '18': {
       id: '18',
@@ -186,7 +187,7 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       level: 'Advanced',
       tags: ['AI', 'Jobs', 'Automation'],
       imageUrl: 'https://i.pinimg.com/1200x/63/83/86/638386035baa03f7b2132090383ea92d.jpg',
-        videoUrl: 'https://www.youtube.com/watch?v=ZxKM3DCV2kE',
+        videoUrl: 'https://www.youtube.com/watch?v=fEkXavRkzlQ',
     },
   };
 
@@ -203,7 +204,9 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       videoUrl: 'https://www.youtube.com/watch?v=wod8gUBxWR4',
     }
   );
-  const [modules, setModules] = React.useState<any[]>([]);
+  // Start with built-in content so the curriculum is never empty;
+  // Supabase data (if present) overrides it below.
+  const [modules, setModules] = React.useState<any[]>(getCourseModules(courseId));
 
   React.useEffect(() => {
     async function fetchCourseDetails() {
@@ -223,14 +226,19 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
             level: c.level || 'Beginner',
             tags: [c.level, (c.competency_area || '').replace(/_/g, ' '), 'Certification'].filter(Boolean),
             imageUrl: c.image_url || 'https://i.pinimg.com/736x/c9/af/43/c9af431cdb9322e4ff4a43af70db96ae.jpg',
-            videoUrl: c.video_url || 'https://www.youtube.com/watch?v=wod8gUBxWR4',
+            videoUrl: c.video_url || `https://www.youtube.com/watch?v=${getCourseVideo(c.id, 0).id}`,
           });
-          if (c.modules) {
+          if (c.modules && c.modules.length > 0) {
             setModules(c.modules.sort((a: any, b: any) => (a.order_num || 0) - (b.order_num || 0)));
+          } else {
+            // No DB content — keep the built-in curriculum for this course.
+            setModules(getCourseModules(courseId));
           }
         }
       } catch (err) {
         console.log('Error fetching course details from Supabase:', err);
+        // Offline / no row: fall back to built-in content.
+        setModules(getCourseModules(courseId));
       }
     }
     fetchCourseDetails();
