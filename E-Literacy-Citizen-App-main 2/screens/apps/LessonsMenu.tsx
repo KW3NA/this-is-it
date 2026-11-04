@@ -63,7 +63,6 @@ const initialAvailableCourses = [
     tags: 'Devices • Internet',
     icon: 'desktop',
     imageUrl: 'https://i.pinimg.com/736x/c9/af/43/c9af431cdb9322e4ff4a43af70db96ae.jpg',
-    ,
   },
   {
     id: 5,
@@ -74,7 +73,6 @@ const initialAvailableCourses = [
     tags: 'Web • Navigation',
     icon: 'arrow-pointer',
     imageUrl: 'https://i.pinimg.com/1200x/5c/04/4d/5c044dfa3ddd5ef809f1c8e473d9bf35.jpg',
-    ,
   },
   {
     id: 6,
@@ -85,7 +83,6 @@ const initialAvailableCourses = [
     tags: 'Safety • Privacy',
     icon: 'shield-halved',
     imageUrl: 'https://i.pinimg.com/1200x/fd/d3/8e/fdd38ec2967a3b43678794c61432b22b.jpg',
-    ,
   },
   {
     id: 7,
@@ -96,7 +93,6 @@ const initialAvailableCourses = [
     tags: 'Mobile • Photos',
     icon: 'mobile-screen',
     imageUrl: 'https://i.pinimg.com/736x/57/7d/5b/577d5bb2029524c0070fbf4307114666.jpg',
-    ,
   },
   {
     id: 8,
@@ -107,7 +103,6 @@ const initialAvailableCourses = [
     tags: 'Email • Chat',
     icon: 'envelope',
     imageUrl: 'https://i.pinimg.com/736x/cd/5d/40/cd5d400c39e3891914066593b96d610c.jpg',
-    ,
   },
   // Intermediate Courses
   {
@@ -119,7 +114,6 @@ const initialAvailableCourses = [
     tags: 'Productivity • Docs',
     icon: 'wrench',
     imageUrl: 'https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24102584/m365app.jpg?quality=90&strip=all&crop=0,0.24875621890547,100,99.502487562189',
-    ,
   },
   {
     id: 10,
@@ -130,7 +124,6 @@ const initialAvailableCourses = [
     tags: 'Career • CV',
     icon: 'briefcase',
     imageUrl: 'https://www.flexjobs.com/blog/wp-content/uploads/2021/09/10045333/Job-Searching-Online-11-Best-Practices-You-Need-to-Know-2-2.jpg?w=1024',
-    ,
   },
   {
     id: 11,
@@ -141,7 +134,6 @@ const initialAvailableCourses = [
     tags: 'Email • Meetings',
     icon: 'users',
     imageUrl: 'https://i.pinimg.com/1200x/13/f4/d0/13f4d04f47eac56d27d4b9678f86ff6a.jpg',
-    ,
   },
   {
     id: 12,
@@ -152,7 +144,6 @@ const initialAvailableCourses = [
     tags: 'Branding • Safety',
     icon: 'user-shield',
     imageUrl: 'https://www.globalsign.com/application/files/6917/1496/1818/digital-identity-hero-image.webp',
-    ,
   },
   {
     id: 13,
@@ -163,7 +154,6 @@ const initialAvailableCourses = [
     tags: 'Cloud • Storage',
     icon: 'cloud',
     imageUrl: 'https://i.pinimg.com/1200x/85/1b/74/851b74e4e5e8f285409f567c86a377dc.jpg',
-    ,
   },
   // Advanced Courses
   {
@@ -175,7 +165,6 @@ const initialAvailableCourses = [
     tags: 'Business • Tools',
     icon: 'rocket',
     imageUrl: 'https://i.pinimg.com/736x/2e/6d/82/2e6d82123a4ef5422984ea07fa6ad0cd.jpg',
-    ,
   },
   {
     id: 15,
@@ -186,7 +175,6 @@ const initialAvailableCourses = [
     tags: 'Security • Threats',
     icon: 'shield',
     imageUrl: 'https://i.pinimg.com/736x/0b/8a/48/0b8a48d4343a1eb1fd9581e1048f2f45.jpg',
-    ,
   },
   {
     id: 16,
@@ -197,7 +185,6 @@ const initialAvailableCourses = [
     tags: 'Analysis • Insights',
     icon: 'chart-line',
     imageUrl: 'https://i.pinimg.com/736x/2b/a2/9c/2ba29c620e03944902f182e748aa8abd.jpg',
-    ,
   },
   {
     id: 17,
@@ -208,7 +195,6 @@ const initialAvailableCourses = [
     tags: 'Design • Editing',
     icon: 'video',
     imageUrl: 'https://i.pinimg.com/1200x/e5/b3/e3/e5b3e38520b4b0bc4d7a4b1d6b05605f.jpg',
-    ,
   },
   {
     id: 18,
@@ -219,7 +205,6 @@ const initialAvailableCourses = [
     tags: 'AI • Jobs',
     icon: 'robot',
     imageUrl: 'https://i.pinimg.com/1200x/63/83/86/638386035baa03f7b2132090383ea92d.jpg',
-    ,
   },
 ];
 
@@ -253,7 +238,7 @@ function LessonsMenu({ navigation }: Props) {
             tags: `${c.level} • ${(c.competency_area || 'digital').replace(/_/g, ' ')}`,
             icon: c.competency_area === 'using_devices' ? 'desktop' : 'shield-halved',
             imageUrl: c.image_url || 'https://i.pinimg.com/736x/c9/af/43/c9af431cdb9322e4ff4a43af70db96ae.jpg',
-            videoUrl: c.video_url || `https://www.youtube.com/watch?v=${getCourseVideo(c.id, 0).id}`,
+            videoUrl: c.video_url || getCourseVideo(c.id, 0).url,
           }));
           setAvailableCourses(mapped);
         }
