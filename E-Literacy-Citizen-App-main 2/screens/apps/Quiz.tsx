@@ -289,7 +289,7 @@ const Quiz = ({ navigation, route }: any) => {
 
       <ScrollView
         style={styles.questionScroll}
-        contentContainerStyle={styles.questionScrollContent}
+        contentContainerStyle={[styles.questionScrollContent, proctored !== false && styles.proctoredScrollContent]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -402,6 +402,11 @@ const styles = StyleSheet.create({
   questionScroll: {
     flex: 1,
   },
+  // Extra top clearance so questions/options never hide behind the REC bar
+  // when the live proctor camera overlay is active.
+  proctoredScrollContent: {
+    paddingTop: 76,
+  },
   questionScrollContent: {
     paddingHorizontal: 4,
     paddingBottom: 24,
@@ -425,11 +430,13 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   optionButton: {
-    paddingVertical: 14,
+    paddingVertical: 16,
     paddingHorizontal: 16,
     borderWidth: 1.5,
     borderRadius: 10,
     marginBottom: 12,
+    minHeight: 54,
+    justifyContent: 'center',
   },
   optionText: {
     fontSize: 16,

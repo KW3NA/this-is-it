@@ -396,7 +396,7 @@ const AssessmentScreen = ({ route, navigation }) => {
       >
         <ScrollView
           style={styles.content}
-          contentContainerStyle={styles.contentInner}
+          contentContainerStyle={[styles.contentInner, !!proctored && styles.proctoredContentInner]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -404,7 +404,7 @@ const AssessmentScreen = ({ route, navigation }) => {
         </ScrollView>
 
         {/* Navigation Buttons */}
-        <View style={styles.navigationContainer}>
+        <View style={[styles.navigationContainer, !!proctored && styles.navigationContainerProctored]}>
           <TouchableOpacity
             style={[
               styles.navButton,
@@ -538,6 +538,11 @@ const styles = StyleSheet.create({
   contentInner: {
     paddingBottom: 16,
   },
+  // Extra top clearance so questions/options never hide behind the REC bar
+  // while the live proctor camera overlay is active.
+  proctoredContentInner: {
+    paddingTop: 76,
+  },
   questionContainer: {
     paddingVertical: 12,
   },
@@ -553,6 +558,9 @@ const styles = StyleSheet.create({
   optionButton: {
     borderRadius: 10,
     overflow: 'hidden',
+    borderWidth: 1.5,
+    minHeight: 54,
+    justifyContent: 'center',
   },
   optionText: {
     fontSize: 16,
@@ -589,6 +597,9 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     minHeight: 50,
+  },
+  navigationContainerProctored: {
+    paddingBottom: 28,
   },
   navigationContainer: {
     flexDirection: 'row',
