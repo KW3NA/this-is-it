@@ -1,16 +1,6 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  StatusBar,
-  Dimensions,
-  ImageBackground,
-  Linking,
-} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Dimensions, ImageBackground, Linking } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';

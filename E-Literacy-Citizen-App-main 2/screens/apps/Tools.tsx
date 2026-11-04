@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  SafeAreaView,
-  Image,
-} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { TranslatedText } from '../../components/TranslatedText';
+import TranslatedText from '../../components/TranslatedText';
 import { useTheme } from '../../components/ThemeContext';
 import  BottomTabBar  from '../../components/BottomTabBar';
 import ARMenu from '../../components/ARMenu';

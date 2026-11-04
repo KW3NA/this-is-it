@@ -17,7 +17,7 @@ import { send2FAOtp, verify2FAOtp } from '../../config/api';
 import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '../../components/UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TranslatedText } from '../../components/TranslatedText';
+import TranslatedText from '../../components/TranslatedText';
 type Props = NativeStackScreenProps<RootStackParamList, 'TwoFactor'>;
 
 export default function TwoFactorScreen({ navigation, route }: Props) {

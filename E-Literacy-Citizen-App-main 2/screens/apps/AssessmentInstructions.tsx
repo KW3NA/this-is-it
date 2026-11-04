@@ -93,6 +93,7 @@ const AssessmentInstructions = ({ navigation, route }: any) => {
           <AssessmentProctoredView
             assessment={assessment}
             onNavigate={(navProps: any) => navigation.navigate('Assessment', navProps)}
+            onCancel={() => setProctored(false)}
           />
         </ProctorGate>
       )}
@@ -101,21 +102,24 @@ const AssessmentInstructions = ({ navigation, route }: any) => {
 };
 
 // Small inner screen shown inside the proctor overlay once camera+mic are live.
-const AssessmentProctoredView = ({ assessment, onNavigate }: any) => {
+const AssessmentProctoredView = ({ assessment, onNavigate, onCancel }: any) => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
       <FontAwesome6 name="shield-halved" size={44} color="#4CAF50" style={{ marginBottom: 16 }} />
-      <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700', textAlign: 'center', marginBottom: 8 }}>
+      <TranslatedText style={{ color: '#fff', fontSize: 18, fontWeight: '700', textAlign: 'center', marginBottom: 8 }}>
         Proctor session is LIVE
-      </Text>
-      <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, textAlign: 'center', marginBottom: 24 }}>
+      </TranslatedText>
+      <TranslatedText style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, textAlign: 'center', marginBottom: 24, lineHeight: 20 }}>
         Your camera and microphone are recording. Do not cover the camera or leave this screen during the assessment.
-      </Text>
+      </TranslatedText>
       <TouchableOpacity
         style={{ backgroundColor: '#4CAF50', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 10 }}
         onPress={() => onNavigate({ assessment, proctored: true })}
       >
-        <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Begin Proctored Assessment</Text>
+        <TranslatedText style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Begin Proctored Assessment</TranslatedText>
+      </TouchableOpacity>
+      <TouchableOpacity style={{ marginTop: 14, paddingVertical: 10 }} onPress={onCancel}>
+        <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, textDecorationLine: 'underline' }}>Cancel</Text>
       </TouchableOpacity>
     </View>
   );

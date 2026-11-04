@@ -80,28 +80,42 @@ const QuizInstructions = ({ navigation, route }: any) => {
           <TranslatedText style={styles.startButtonText}>Start Quiz</TranslatedText>
         </TouchableOpacity>
 
-        {/* Mandatory camera + mic proctor gate */}
+        {/* Mandatory camera + mic proctor gate — full-screen overlay, rendered
+            outside the ScrollView so the live camera session is never clipped */}
         {proctored && (
           <ProctorGate>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-              <FontAwesome5 name="shield-alt" size={44} color="#4CAF50" style={{ marginBottom: 16 }} />
-              <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700', textAlign: 'center', marginBottom: 8 }}>
-                Proctor session is LIVE
-              </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, textAlign: 'center', marginBottom: 24 }}>
-                Your camera and microphone are recording. Do not cover the camera or leave this screen during the quiz.
-              </Text>
-              <TouchableOpacity
-                style={{ backgroundColor: '#4CAF50', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 10 }}
-                onPress={() => navigation.navigate('Quiz', { courseId, proctored: true })}
-              >
-                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Begin Proctored Quiz</Text>
-              </TouchableOpacity>
-            </View>
+            <QuizProctoredView
+              onStart={() => navigation.navigate('Quiz', { courseId, proctored: true })}
+              onCancel={() => setProctored(false)}
+            />
           </ProctorGate>
         )}
       </ScrollView>
     </SafeAreaView>
+  );
+};
+
+// Small panel shown inside the proctor overlay once camera+mic are live.
+const QuizProctoredView = ({ onStart, onCancel }: any) => {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+      <FontAwesome5 name="shield-alt" size={44} color="#4CAF50" style={{ marginBottom: 16 }} />
+      <TranslatedText style={{ color: '#fff', fontSize: 18, fontWeight: '700', textAlign: 'center', marginBottom: 8 }}>
+        Proctor session is LIVE
+      </TranslatedText>
+      <TranslatedText style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, textAlign: 'center', marginBottom: 24, lineHeight: 20 }}>
+        Your camera and microphone are recording. Do not cover the camera or leave this screen during the quiz.
+      </TranslatedText>
+      <TouchableOpacity
+        style={{ backgroundColor: '#4CAF50', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 10 }}
+        onPress={onStart}
+      >
+        <TranslatedText style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Begin Proctored Quiz</TranslatedText>
+      </TouchableOpacity>
+      <TouchableOpacity style={{ marginTop: 14, paddingVertical: 10 }} onPress={onCancel}>
+        <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, textDecorationLine: 'underline' }}>Cancel</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 

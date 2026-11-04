@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { Linking } from 'react-native';
 import TranslatedText from './TranslatedText';
 
 /**
@@ -21,6 +23,7 @@ const ProctorOverlayInner: React.FC<{
   children: React.ReactNode;
   onSessionEnd?: () => void;
 }> = ({ children, onSessionEnd }) => {
+  const { t } = useTranslation();
   const [camPerm, requestCamPerm] = useCameraPermissions();
   const [micPerm, requestMicPerm] = useMicrophonePermissions();
   const [state, setState] = useState<ProctorState>('checking');
@@ -73,13 +76,24 @@ const ProctorOverlayInner: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, camPerm, micPerm]);
 
+  const openAppSettings = () => {
+    // Deep-link straight into this app's permission settings page.
+    Linking.openSettings().catch(() => {
+      Alert.alert('Could not open settings', 'Please open your phone Settings and find the E-Literacy Citizen app manually.');
+    });
+  };
+
   const handlePermissionRequest = async () => {
     if (!camPerm?.granted) {
       const r = await requestCamPerm();
       if (!r.granted) {
         Alert.alert(
-          'Camera required',
-          'This assessment is proctored. You must allow camera access to write the test. Please enable it in your phone settings.',
+          t('proctor.cameraRequiredTitle'),
+          t('proctor.cameraRequiredBody'),
+          [
+            { text: t('common.cancel'), style: 'cancel' },
+            { text: t('proctor.openSettings'), onPress: openAppSettings },
+          ],
         );
         return;
       }
@@ -88,8 +102,12 @@ const ProctorOverlayInner: React.FC<{
       const r = await requestMicPerm();
       if (!r.granted) {
         Alert.alert(
-          'Microphone required',
-          'This assessment is proctored. You must allow microphone access to write the test. Please enable it in your phone settings.',
+          t('proctor.micRequiredTitle'),
+          t('proctor.micRequiredBody'),
+          [
+            { text: t('common.cancel'), style: 'cancel' },
+            { text: t('proctor.openSettings'), onPress: openAppSettings },
+          ],
         );
         return;
       }
@@ -121,34 +139,67 @@ const ProctorOverlayInner: React.FC<{
 
   if (!granted || state === 'blocked') {
     return (
-      <View style={styles.container}>
-        <View style={styles.iconRow}>
-          <FontAwesome6
-            name="video-slash"
-            size={40}
-            color={camPerm?.granted ? '#4CAF50' : '#FF5252'}
-          />
-          <FontAwesome6
-            name="microphone-slash"
-            size={40}
-            color={micPerm?.granted ? '#4CAF50' : '#FF5252'}
-            style={{ marginLeft: 24 }}
-          />
+      <View style={styles.blockedScroll}>
+        <View style={styles.blockedInner}>
+          <View style={styles.iconRow}>
+            <FontAwesome6
+              name="video-slash"
+              size={40}
+              color={camPerm?.granted ? '#4CAF50' : '#FF5252'}
+            />
+            <FontAwesome6
+              name="microphone-slash"
+              size={40}
+              color={micPerm?.granted ? '#4CAF50' : '#FF5252'}
+              style={{ marginLeft: 24 }}
+            />
+          </View>
+          <TranslatedText style={styles.title}>Camera &amp; Microphone Required</TranslatedText>
+          <TranslatedText style={styles.subtitle}>
+            To prevent cheating, this assessment can only be written while your camera is on and
+            recording. No answers can be entered without an active proctor session.
+          </TranslatedText>
+
+          {/* Per-permission status chips so the learner sees exactly what is missing */}
+          <View style={styles.permStatusRow}>
+            <View style={[styles.permChip, camPerm?.granted ? styles.permChipOk : styles.permChipBad]}>
+              <FontAwesome6
+                name={camPerm?.granted ? 'video' : 'video-slash'}
+                size={14}
+                color={camPerm?.granted ? '#A5D6A7' : '#FF8A80'}
+              />
+              <Text style={[styles.permChipText, { color: camPerm?.granted ? '#A5D6A7' : '#FF8A80' }]}>
+                Camera {camPerm?.granted ? t('proctor.statusReady') : t('proctor.statusNotGranted')}
+              </Text>
+            </View>
+            <View style={[styles.permChip, micPerm?.granted ? styles.permChipOk : styles.permChipBad]}>
+              <FontAwesome6
+                name={micPerm?.granted ? 'microphone' : 'microphone-slash'}
+                size={14}
+                color={micPerm?.granted ? '#A5D6A7' : '#FF8A80'}
+              />
+              <Text style={[styles.permChipText, { color: micPerm?.granted ? '#A5D6A7' : '#FF8A80' }]}>
+                Mic {micPerm?.granted ? t('proctor.statusReady') : t('proctor.statusNotGranted')}
+              </Text>
+            </View>
+          </View>
+
+          <TouchableOpacity style={styles.enableButton} onPress={handlePermissionRequest} activeOpacity={0.85}>
+            <Text style={styles.enableButtonText}>Enable Camera &amp; Mic to Start</Text>
+          </TouchableOpacity>
+          {!camPerm?.canAskAgain && !micPerm?.canAskAgain && (
+            <>
+              <TranslatedText style={styles.settingsHint}>
+                Permission was denied permanently — please enable Camera and Microphone in your phone
+                Settings, then reopen the app.
+              </TranslatedText>
+              <TouchableOpacity style={styles.settingsButton} onPress={openAppSettings}>
+                <FontAwesome6 name="gear" size={16} color="#fff" style={{ marginRight: 8 }} />
+                <Text style={styles.settingsButtonText}>Open Phone Settings</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
-        <Text style={styles.title}>Camera &amp; Microphone Required</Text>
-        <Text style={styles.subtitle}>
-          To prevent cheating, this assessment can only be written while your camera is on and
-          recording. No answers can be entered without an active proctor session.
-        </Text>
-        <TouchableOpacity style={styles.enableButton} onPress={handlePermissionRequest} activeOpacity={0.85}>
-          <Text style={styles.enableButtonText}>Enable Camera &amp; Mic to Start</Text>
-        </TouchableOpacity>
-        {!camPerm?.canAskAgain && (
-          <Text style={styles.settingsHint}>
-            Permission was denied permanently — please enable Camera and Microphone in your phone
-            Settings, then reopen the app.
-          </Text>
-        )}
       </View>
     );
   }
@@ -168,10 +219,12 @@ const ProctorOverlayInner: React.FC<{
       {/* Dim veil so the quiz stays readable over the video */}
       <View pointerEvents="none" style={styles.veil} />
       <View style={styles.sessionBar}>
-        <View style={styles.recDot} />
-        <Text style={styles.sessionText}>
-          PROCTORED • REC {elapsed}
-        </Text>
+        <View style={styles.recGroup}>
+          <View style={styles.recDot} />
+          <Text style={styles.sessionText}>
+            {t('proctor.recordingLabel')} {elapsed}
+          </Text>
+        </View>
         <TranslatedText style={styles.sessionText}>Do not cover your camera</TranslatedText>
       </View>
       <View style={styles.content}>{children}</View>
@@ -203,7 +256,36 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0B0F14' },
   content: { flex: 1 },
   veil: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.35)' },
+  blockedScroll: {
+    flex: 1,
+    backgroundColor: '#0B0F14',
+  },
+  blockedInner: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+  },
   iconRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 20 },
+  permStatusRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 24,
+    flexWrap: 'wrap',
+  },
+  permChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginHorizontal: 6,
+    marginBottom: 6,
+  },
+  permChipOk: { backgroundColor: 'rgba(76,175,80,0.18)', borderWidth: 1, borderColor: 'rgba(76,175,80,0.5)' },
+  permChipBad: { backgroundColor: 'rgba(255,82,82,0.15)', borderWidth: 1, borderColor: 'rgba(255,82,82,0.5)' },
+  permChipText: { fontSize: 12, fontWeight: '600', marginLeft: 6 },
   title: {
     color: '#fff',
     fontSize: 20,
@@ -228,6 +310,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   enableButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  settingsButton: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 14,
+    backgroundColor: '#37474F',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  settingsButtonText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   settingsHint: {
     color: '#FFAB91',
     fontSize: 12,
@@ -249,6 +342,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.55)',
     zIndex: 10,
   },
+  recGroup: { flexDirection: 'row', alignItems: 'center' },
   recDot: {
     width: 10,
     height: 10,

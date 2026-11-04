@@ -1,17 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  SafeAreaView,
-  TextInput,
-  Alert,
-  Modal,
-} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { TranslatedText } from '../../components/TranslatedText';
+import TranslatedText from '../../components/TranslatedText';
 import { useTheme } from '../../components/ThemeContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import ProctorGate from '../../components/ProctorOverlay';
@@ -155,6 +146,7 @@ const AssessmentScreen = ({ route, navigation }) => {
   };
 
   const handleSubmitAssessment = () => {
+    setShowQuitModal(false);
     Alert.alert(
       'Submit Assessment',
       'Are you sure you want to submit your assessment?',
@@ -170,8 +162,7 @@ const AssessmentScreen = ({ route, navigation }) => {
               questions 
             });
 
-            // Persist the attempt to Supabase (quiz_attempts) so Admin Dashboard
-            // > Reports reflects real assessment data. Best-effort, never blocks.
+            // Persist the attempt to Supabase (quiz_attempts). Best-effort, never blocks.
             (async () => {
               try {
                 let userId: string | null = null;
@@ -188,7 +179,9 @@ const AssessmentScreen = ({ route, navigation }) => {
                   const a = answers[q.id];
                   if (a === undefined || a === null) return false;
                   if (typeof q.correctAnswer !== 'undefined') {
-                    return String(a).toLowerCase() === String(q.correctAnswer).toLowerCase();
+                    if (q.type === 'true_false') return a === q.correctAnswer;
+                    if (q.type === 'multiple_choice') return Number(a) === Number(q.correctAnswer);
+                    return String(a).trim().toLowerCase() === String(q.correctAnswer).trim().toLowerCase();
                   }
                   return false;
                 }).length;
@@ -220,13 +213,12 @@ const AssessmentScreen = ({ route, navigation }) => {
       case 'multiple_choice':
         return (
           <View style={styles.questionContainer}>
-            <Text style={[styles.questionText, { color: colors.text }]}>
+            <TranslatedText style={[styles.questionText, { color: colors.text }]}>
               {question.question}
-            </Text>
+            </TranslatedText>
             <View style={styles.optionsContainer}>
-              {question.options.map((option, index) => {
+              {(question.options ?? []).map((option, index) => {
                 const isSelected = currentAnswer === index;
-                const isAnswered = currentAnswer !== undefined;
                 
                 if (isSelected) {
                   // Selected option with gradient
@@ -235,6 +227,7 @@ const AssessmentScreen = ({ route, navigation }) => {
                       key={index}
                       style={styles.optionButton}
                       onPress={() => handleAnswer(question.id, index)}
+                      activeOpacity={0.8}
                     >
                       <LinearGradient
                         colors={['#E67012', '#F4842B']}
@@ -256,15 +249,16 @@ const AssessmentScreen = ({ route, navigation }) => {
                       style={[
                         styles.optionButton,
                         {
-                          backgroundColor: isAnswered ? '#E5E5E5' : colors.card,
-                          borderColor: isAnswered ? '#D0D0D0' : '#E0E0E0',
+                          backgroundColor: colors.card,
+                          borderColor: '#E0E0E0',
                         }
                       ]}
                       onPress={() => handleAnswer(question.id, index)}
+                      activeOpacity={0.7}
                     >
                       <Text style={[
                         styles.optionText,
-                        { color: isAnswered ? '#808080' : colors.text }
+                        { color: colors.text }
                       ]}>
                         {String.fromCharCode(65 + index)}. {option}
                       </Text>
@@ -279,9 +273,9 @@ const AssessmentScreen = ({ route, navigation }) => {
       case 'true_false':
         return (
           <View style={styles.questionContainer}>
-            <Text style={[styles.questionText, { color: colors.text }]}>
+            <TranslatedText style={[styles.questionText, { color: colors.text }]}>
               {question.question}
-            </Text>
+            </TranslatedText>
             <View style={styles.trueFalseContainer}>
               <TouchableOpacity
                 style={[
@@ -292,13 +286,14 @@ const AssessmentScreen = ({ route, navigation }) => {
                   }
                 ]}
                 onPress={() => handleAnswer(question.id, true)}
+                activeOpacity={0.7}
               >
-                <Text style={[
+                <TranslatedText style={[
                   styles.trueFalseText,
                   { color: currentAnswer === true ? 'white' : colors.text }
                 ]}>
                   True
-                </Text>
+                </TranslatedText>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -309,13 +304,14 @@ const AssessmentScreen = ({ route, navigation }) => {
                   }
                 ]}
                 onPress={() => handleAnswer(question.id, false)}
+                activeOpacity={0.7}
               >
-                <Text style={[
+                <TranslatedText style={[
                   styles.trueFalseText,
                   { color: currentAnswer === false ? 'white' : colors.text }
                 ]}>
                   False
-                </Text>
+                </TranslatedText>
               </TouchableOpacity>
             </View>
           </View>
@@ -324,9 +320,9 @@ const AssessmentScreen = ({ route, navigation }) => {
       case 'fill_blank':
         return (
           <View style={styles.questionContainer}>
-            <Text style={[styles.questionText, { color: colors.text }]}>
+            <TranslatedText style={[styles.questionText, { color: colors.text }]}>
               {question.question}
-            </Text>
+            </TranslatedText>
             <TextInput
               style={[
                 styles.fillBlankInput,
@@ -336,10 +332,12 @@ const AssessmentScreen = ({ route, navigation }) => {
                   color: colors.text,
                 }
               ]}
-              value={currentAnswer || ''}
+              value={typeof currentAnswer === 'string' ? currentAnswer : ''}
               onChangeText={(text) => handleAnswer(question.id, text)}
               placeholder="Type your answer here..."
               placeholderTextColor={colors.muted}
+              autoCorrect={false}
+              returnKeyType="done"
             />
           </View>
         );
@@ -366,19 +364,19 @@ const AssessmentScreen = ({ route, navigation }) => {
 
   return (
     <ProctorGate active={!!proctored}>
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-       
-        <Text style={styles.headerTitle}>{assessment.title}</Text>
-        <TouchableOpacity onPress={() => setShowQuitModal(true)} style={styles.quitButton}>
+        <TranslatedText style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
+          {assessment.title}
+        </TranslatedText>
+        <TouchableOpacity onPress={() => setShowQuitModal(true)} style={styles.quitButton} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <FontAwesome6 name="xmark" size={20} color="#FF0000" />
         </TouchableOpacity>
       </View>
 
-      {/* Timer - moved above progress bar */}
+      {/* Timer + question counter on one row to save vertical space */}
       <View style={styles.timerContainer}>
-        
         <Text style={[styles.timerText, { color: timeRemaining <= 10 * 60 ? '#FF0000' : '#4CAF50' }]}>Time: {formatTime(timeRemaining)}</Text>
       </View>
       {/* Progress Bar */}
@@ -392,43 +390,53 @@ const AssessmentScreen = ({ route, navigation }) => {
       </View>
 
       {/* Question Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {renderQuestion(currentQuestion)}
-      </ScrollView>
-
-      {/* Navigation Buttons */}
-      <View style={styles.navigationContainer}>
-        <TouchableOpacity
-          style={[
-            styles.navButton,
-            { opacity: currentQuestionIndex === 0 ? 0.5 : 1 }
-          ]}
-          onPress={handlePrevious}
-          disabled={currentQuestionIndex === 0}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={[styles.contentInner, !!proctored && styles.proctoredContentInner]}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.navButtonText}>Previous</Text>
-        </TouchableOpacity>
+          {renderQuestion(currentQuestion)}
+        </ScrollView>
 
-        {currentQuestionIndex === questions.length - 1 ? (
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmitAssessment}>
-            <LinearGradient
-              colors={['#4CAF50', '#45a049']}
-              style={styles.submitGradient}
-            >
-              <Text style={styles.submitButtonText}>Submit Assessment</Text>
-            </LinearGradient>
+        {/* Navigation Buttons */}
+        <View style={[styles.navigationContainer, !!proctored && styles.navigationContainerProctored]}>
+          <TouchableOpacity
+            style={[
+              styles.navButton,
+              { opacity: currentQuestionIndex === 0 ? 0.5 : 1 }
+            ]}
+            onPress={handlePrevious}
+            disabled={currentQuestionIndex === 0}
+          >
+            <TranslatedText style={styles.navButtonText}>Previous</TranslatedText>
           </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-            <LinearGradient
-              colors={['#FF9800', '#FF6D00']}
-              style={styles.nextGradient}
-            >
-              <Text style={styles.nextButtonText}>Next</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
-      </View>
+
+          {currentQuestionIndex === questions.length - 1 ? (
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmitAssessment}>
+              <LinearGradient
+                colors={['#4CAF50', '#45a049']}
+                style={styles.submitGradient}
+              >
+                <TranslatedText style={styles.submitButtonText}>Submit Assessment</TranslatedText>
+              </LinearGradient>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+              <LinearGradient
+                colors={['#FF9800', '#FF6D00']}
+                style={styles.nextGradient}
+              >
+                <TranslatedText style={styles.nextButtonText}>Next</TranslatedText>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
+        </View>
+      </KeyboardAvoidingView>
 
       {/* Quit Modal */}
       <Modal
@@ -504,7 +512,8 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingTop: 10,
+    paddingBottom: 6,
   },
   progressBar: {
     height: 8,
@@ -515,6 +524,7 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     backgroundColor: '#E67012',
+    borderRadius: 4,
   },
   progressText: {
     textAlign: 'center',
@@ -525,29 +535,41 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
+  contentInner: {
+    paddingBottom: 16,
+  },
+  // Extra top clearance so questions/options never hide behind the REC bar
+  // while the live proctor camera overlay is active.
+  proctoredContentInner: {
+    paddingTop: 76,
+  },
   questionContainer: {
-    paddingVertical: 20,
+    paddingVertical: 12,
   },
   questionText: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 20,
-    lineHeight: 24,
+    lineHeight: 26,
   },
   optionsContainer: {
     gap: 12,
   },
   optionButton: {
-    padding: 16,
-    borderRadius: 8,
-    borderWidth: 1,
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderWidth: 1.5,
+    minHeight: 54,
+    justifyContent: 'center',
   },
   optionText: {
     fontSize: 16,
+    lineHeight: 22,
+    padding: 16,
   },
   selectedOptionGradient: {
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   selectedOptionText: {
     fontSize: 16,
@@ -576,11 +598,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     minHeight: 50,
   },
+  navigationContainerProctored: {
+    paddingBottom: 28,
+  },
   navigationContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingTop: 12,
+    paddingBottom: 8,
     gap: 16,
   },
   navButton: {
