@@ -9,6 +9,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { useLanguage } from '../../components/LanguageContext';
 import TranslatedText from '../../components/TranslatedText';
 import { supabase } from '../../config/supabase';
+import { getCourseModules } from '../../config/courseContent';
 import * as WebBrowser from 'expo-web-browser';
 import { useTheme } from '../../components/ThemeContext';
 const { width } = Dimensions.get('window');
@@ -215,7 +216,8 @@ interface ResumeCourseProps {
       videoUrl: 'https://www.youtube.com/watch?v=wod8gUBxWR4',
     }
   );
-  const [modules, setModules] = React.useState<any[]>([]);
+  // Built-in content first so lessons are never empty; Supabase overrides it.
+  const [modules, setModules] = React.useState<any[]>(getCourseModules(courseId));
 
   React.useEffect(() => {
     async function fetchCourseDetails() {
@@ -237,12 +239,15 @@ interface ResumeCourseProps {
             imageUrl: c.image_url || 'https://i.pinimg.com/736x/c9/af/43/c9af431cdb9322e4ff4a43af70db96ae.jpg',
             videoUrl: c.video_url || 'https://www.youtube.com/watch?v=wod8gUBxWR4',
           });
-          if (c.modules) {
+          if (c.modules && c.modules.length > 0) {
             setModules(c.modules.sort((a: any, b: any) => (a.order_num || 0) - (b.order_num || 0)));
+          } else {
+            setModules(getCourseModules(courseId));
           }
         }
       } catch (err) {
         console.log('Error fetching course details in ResumeCourse:', err);
+        setModules(getCourseModules(courseId));
       }
     }
     fetchCourseDetails();

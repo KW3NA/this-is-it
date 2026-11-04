@@ -9,6 +9,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { useLanguage } from '../../components/LanguageContext';
 import TranslatedText from '../../components/TranslatedText';
 import { supabase } from '../../config/supabase';
+import { getCourseModules } from '../../config/courseContent';
 
 const { width } = Dimensions.get('window');
 
@@ -203,7 +204,9 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
       videoUrl: 'https://www.youtube.com/watch?v=wod8gUBxWR4',
     }
   );
-  const [modules, setModules] = React.useState<any[]>([]);
+  // Start with built-in content so the curriculum is never empty;
+  // Supabase data (if present) overrides it below.
+  const [modules, setModules] = React.useState<any[]>(getCourseModules(courseId));
 
   React.useEffect(() => {
     async function fetchCourseDetails() {
@@ -225,12 +228,17 @@ const CourseDetails: React.FC<Props> = ({ navigation, route }) => {
             imageUrl: c.image_url || 'https://i.pinimg.com/736x/c9/af/43/c9af431cdb9322e4ff4a43af70db96ae.jpg',
             videoUrl: c.video_url || 'https://www.youtube.com/watch?v=wod8gUBxWR4',
           });
-          if (c.modules) {
+          if (c.modules && c.modules.length > 0) {
             setModules(c.modules.sort((a: any, b: any) => (a.order_num || 0) - (b.order_num || 0)));
+          } else {
+            // No DB content — keep the built-in curriculum for this course.
+            setModules(getCourseModules(courseId));
           }
         }
       } catch (err) {
         console.log('Error fetching course details from Supabase:', err);
+        // Offline / no row: fall back to built-in content.
+        setModules(getCourseModules(courseId));
       }
     }
     fetchCourseDetails();
